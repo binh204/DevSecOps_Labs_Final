@@ -6,21 +6,24 @@ on:
       - main
 
 jobs:
+
   security-scan:
-    runs-on: ubuntu-latest
+
+    runs-on: self-hosted
 
     steps:
+
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Run Semgrep
-        uses: returntocorp/semgrep-action@v1
-        with:
-          config: auto
+      - name: Show Docker Version
+        run: docker --version
 
-      - name: Run Trivy FS Scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: fs
-          scan-ref: .
-          format: table
+      - name: Show Docker Compose Version
+        run: docker compose version
+
+      - name: Run Semgrep
+        run: docker compose run --rm semgrep
+
+      - name: Run Trivy
+        run: docker compose run --rm trivy
