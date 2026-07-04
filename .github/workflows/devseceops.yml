@@ -1,0 +1,26 @@
+name: DevSecOps Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: auto
+
+      - name: Run Trivy FS Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: table

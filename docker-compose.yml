@@ -1,0 +1,37 @@
+services:
+
+  semgrep:
+    image: semgrep/semgrep:latest
+    container_name: semgrep
+
+    working_dir: /src
+
+    volumes:
+      - ./juice-shop:/src
+      - ./reports/semgrep:/reports
+
+    command:
+      - semgrep
+      - scan
+      - --config=auto
+      - --json
+      - --output=/reports/report.json
+      - /src
+    
+  trivy:
+    image: aquasec/trivy:latest
+    container_name: trivy
+
+    working_dir: /project
+
+    volumes:
+      - ./juice-shop:/project
+      - ./reports/trivy:/reports
+
+    command:
+      - fs
+      - --format
+      - json
+      - --output
+      - /reports/report.json
+      - /project
