@@ -50,6 +50,6 @@ services:
     volumes:
       - ./reports/zap:/zap/wrk
 
-    entrypoint: ["sleep","infinity"]
+  
     
   
