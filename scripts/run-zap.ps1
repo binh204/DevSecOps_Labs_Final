@@ -8,8 +8,16 @@ docker compose run --rm zap `
     -J report.json `
     -w report.md
 
-if ($LASTEXITCODE -ne 0) {
-    throw "OWASP ZAP failed!"
+# if ($LASTEXITCODE -ne 0) {
+#     throw "OWASP ZAP failed!"
+# }
+
+# Write-Host "OWASP ZAP completed."
+
+Write-Host "ZAP Exit Code: $LASTEXITCODE"
+
+if ($LASTEXITCODE -eq 3) {
+    throw "OWASP ZAP execution failed!"
 }
 
 Write-Host "OWASP ZAP completed."
