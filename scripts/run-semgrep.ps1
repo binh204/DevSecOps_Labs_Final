@@ -1,43 +1,52 @@
 Write-Host ""
 Write-Host "========== SEMGREP =========="
 
-# Chạy Semgrep
 docker compose run --rm semgrep
 
 if ($LASTEXITCODE -ne 0) {
     throw "Semgrep scan failed!"
 }
 
-# Đường dẫn báo cáo
-$ReportPath = ".\reports\semgrep\report.json"
-$PrettyReportPath = ".\reports\semgrep\report.pretty.json"
+$Report = ".\reports\semgrep\report.json"
+$Pretty = ".\reports\semgrep\report.pretty.json"
 
-# Kiểm tra file có tồn tại không
-if (-not (Test-Path $ReportPath)) {
-    throw "Semgrep report not found: $ReportPath"
-}
+Write-Host ""
+Write-Host "===== DEBUG ====="
 
-Write-Host "Formatting JSON report..."
+Write-Host "Current Path:"
+Get-Location
+
+Write-Host "Report exists?"
+Test-Path $Report
+
+Write-Host "Report size:"
+(Get-Item $Report).Length
 
 try {
 
-    # Đọc toàn bộ file JSON
-    $json = Get-Content $ReportPath -Raw | ConvertFrom-Json
+    Write-Host "Loading JSON..."
 
-    # Xuất ra file pretty
+    $json = Get-Content $Report -Raw | ConvertFrom-Json
+
+    Write-Host "Formatting..."
+
     $json |
         ConvertTo-Json -Depth 100 |
-        Out-File $PrettyReportPath -Encoding utf8
+        Out-File $Pretty -Encoding utf8
 
-    Write-Host "Pretty report created:"
-    Write-Host "  $PrettyReportPath"
+    Write-Host "Pretty report created."
 
 }
 catch {
 
-    Write-Warning "Cannot format Semgrep report."
-    Write-Warning $_.Exception.Message
+    Write-Host ""
+    Write-Host "========== ERROR =========="
+
+    Write-Host $_.Exception.Message
+
+    throw
 
 }
 
+Write-Host ""
 Write-Host "Semgrep completed successfully."
