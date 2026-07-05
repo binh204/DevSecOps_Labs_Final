@@ -13,7 +13,7 @@ $Report = ".\reports\semgrep\report.json"
 $Pretty = ".\reports\semgrep\report.pretty.json"
 
 # ===== Đường dẫn repo gốc =====
-$Destination = "D:\Đồ án\DevSecOps\reports\semgrep"
+$Destination = "D:\Final_Project\DevSecOps\reports\semgrep"
 
 Write-Host ""
 Write-Host "========== FORMAT REPORT =========="

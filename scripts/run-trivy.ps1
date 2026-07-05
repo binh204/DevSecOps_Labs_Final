@@ -12,7 +12,7 @@ if ($LASTEXITCODE -ne 0) {
 $WorkspaceReport = ".\reports\trivy"
 
 # ===== Đường dẫn repo gốc =====
-$Destination = "D:\Đồ án\DevSecOps\reports\trivy"
+$Destination = "D:\Final_Project\DevSecOps\reports\trivy"
 
 Write-Host ""
 Write-Host "========== COPY REPORT =========="

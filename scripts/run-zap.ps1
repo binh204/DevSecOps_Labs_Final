@@ -27,7 +27,7 @@ if ($ExitCode -eq 3) {
 $WorkspaceReport = ".\reports\zap"
 
 # ===== Đường dẫn repo gốc =====
-$Destination = "D:\Đồ án\DevSecOps\reports\zap"
+$Destination = "D:\Final_Project\DevSecOps\reports\zap"
 
 Write-Host ""
 Write-Host "========== COPY REPORT =========="
