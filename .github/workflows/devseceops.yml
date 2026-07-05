@@ -6,24 +6,42 @@ on:
       - main
 
 jobs:
-
-  security-scan:
-
+  security:
     runs-on: self-hosted
+    timeout-minutes: 30
 
     steps:
-
-      - name: Checkout source
+      - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Show Docker Version
+      - name: Check Docker
         run: docker --version
 
-      - name: Show Docker Compose Version
+      - name: Check Docker Compose
         run: docker compose version
 
       - name: Run Semgrep
-        run: docker compose run --rm semgrep
+        shell: powershell
+        run: .\scripts\run-semgrep.ps1
 
       - name: Run Trivy
-        run: docker compose run --rm trivy
+        shell: powershell
+        run: .\scripts\run-trivy.ps1
+
+      - name: Build Image
+        shell: powershell
+        run: .\scripts\build-image.ps1
+
+      - name: Deploy Juice Shop
+        shell: powershell
+        run: .\scripts\deploy.ps1
+
+      - name: Health Check
+        shell: powershell
+        run: .\scripts\health-check.ps1
+
+      - name: Upload Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: reports/

@@ -1,5 +1,12 @@
 services:
 
+  juice-shop:
+    build:
+      context: ./juice-shop
+    container_name: juice-shop
+    ports:
+      - "3000:3000"
+
   semgrep:
     image: semgrep/semgrep:latest
     container_name: semgrep
