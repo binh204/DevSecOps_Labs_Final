@@ -42,3 +42,14 @@ services:
       - --output
       - /reports/report.json
       - /project
+
+  zap:
+    image: ghcr.io/zaproxy/zaproxy:stable
+    container_name: zap
+    working_dir: /zap/wrk
+    volumes:
+      - ./reports/zap:/zap/wrk
+
+    entrypoint: ["sleep","infinity"]
+    
+  

@@ -40,8 +40,14 @@ jobs:
         shell: powershell
         run: .\scripts\health-check.ps1
 
+      - name: Run OWASP ZAP
+        shell: powershell
+        run: .\scripts\run-zap.ps1
+        
       - name: Upload Reports
         uses: actions/upload-artifact@v4
         with:
           name: security-reports
           path: reports/
+
+      
