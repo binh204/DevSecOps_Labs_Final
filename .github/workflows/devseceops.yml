@@ -45,9 +45,10 @@ jobs:
         run: .\scripts\run-zap.ps1
         
       - name: Upload Reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: security-reports
+          name: security-reports-${{ github.run_number }}
           path: reports/
 
       
