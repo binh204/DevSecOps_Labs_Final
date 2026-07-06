@@ -79,10 +79,6 @@ services:
     command:
       - --directory
       - /workspace
-      - --framework
-      - dockerfile
-      - docker_compose
-      - github_configuration
       - --output
       - json
       - --output-file-path
