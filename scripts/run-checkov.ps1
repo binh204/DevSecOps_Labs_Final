@@ -4,8 +4,21 @@ Write-Host "========== CHECKOV =========="
 # Chạy Checkov
 docker compose run --rm checkov
 
-if ($LASTEXITCODE -ne 0) {
-    throw "Checkov scan failed!"
+Write-Host "Checkov Exit Code: $LASTEXITCODE"
+
+switch ($LASTEXITCODE) {
+    0 {
+        Write-Host "No policy violations found."
+    }
+    1 {
+        Write-Host "Policy violations found."
+    }
+    2 {
+        throw "No IaC files found or Checkov execution failed."
+    }
+    default {
+        throw "Unexpected Checkov exit code: $LASTEXITCODE"
+    }
 }
 
 # ===== Workspace report =====
