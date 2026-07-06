@@ -23,9 +23,32 @@ switch ($LASTEXITCODE) {
 
 # ===== Workspace report =====
 $WorkspaceReport = ".\reports\checkov"
+$Report = "$WorkspaceReport\report.json\results_json.json"
 
 # ===== Repo gốc =====
 $Destination = "D:\Final_Project\DevSecOps\reports\checkov"
+
+Write-Host ""
+Write-Host "========== FORMAT REPORT =========="
+
+if (!(Test-Path $Report)) {
+    throw "Checkov report file not found!"
+}
+
+try {
+    Write-Host "Formatting JSON..."
+    $json = Get-Content $Report -Raw | ConvertFrom-Json
+    $json |
+        ConvertTo-Json -Depth 100 |
+        Out-File $Report -Encoding utf8
+    Write-Host "Report formatted successfully."
+}
+catch {
+    Write-Host ""
+    Write-Host "========== ERROR =========="
+    Write-Host $_.Exception.Message
+    throw
+}
 
 Write-Host ""
 Write-Host "========== COPY REPORT =========="
