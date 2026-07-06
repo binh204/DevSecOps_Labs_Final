@@ -25,23 +25,41 @@ services:
       - --output=/reports/report.json
       - /src
     
-  trivy:
+  trivy-sbom:
     image: aquasec/trivy:latest
-    container_name: trivy
+    container_name: trivy-sbom
 
     working_dir: /project
 
     volumes:
       - ./juice-shop:/project
-      - ./reports/trivy:/reports
+      - ./reports/sbom:/reports
 
     command:
       - fs
       - --format
+      - cyclonedx
+      - --output
+      - /reports/sbom.json
+      - /project
+
+  trivy-sca:
+    image: aquasec/trivy:latest
+    container_name: trivy-sca
+
+    working_dir: /project
+
+    volumes:
+      - ./reports/sbom:/sbom
+      - ./reports/trivy:/reports
+
+    command:
+      - sbom
+      - --format
       - json
       - --output
       - /reports/report.json
-      - /project
+      - /sbom/sbom.json
 
   zap:
     image: ghcr.io/zaproxy/zaproxy:stable
@@ -53,19 +71,18 @@ services:
   checkov:
     image: bridgecrew/checkov:latest
     container_name: checkov
+    working_dir: /workspace
 
-    working_dir: /project
     volumes:
-      - ./:/project
-      - ./reports/checkov:/reports
+      - ./:/workspace
 
     command:
-      - -d
-      - /project
-      - -o
+      - --directory
+      - /workspace
+      - --output
       - json
       - --output-file-path
-      - /reports
+      - /workspace/reports/checkov/report.json
   
     
   

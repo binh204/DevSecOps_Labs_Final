@@ -1,62 +1,85 @@
 Write-Host ""
 Write-Host "========== TRIVY =========="
 
-# Chạy Trivy
-docker compose run --rm trivy
-
-if ($LASTEXITCODE -ne 0) {
-    throw "Trivy scan failed!"
-}
-
-# Write-Host ""
-# Write-Host "========== DEBUG =========="
-
-# Get-ChildItem .\reports\trivy
-
-# Write-Host ""
-# Write-Host "Last modified:"
-# (Get-Item ".\reports\trivy\report.json").LastWriteTime
-
-# ===== Đường dẫn trong workspace của GitHub Actions =====
-$WorkspaceReport = ".\reports\trivy"
-
-# ===== Đường dẫn repo gốc =====
-$Destination = "D:\Final_Project\DevSecOps\reports\trivy"
+# ==========================
+# 1. Generate SBOM
+# ==========================
 
 Write-Host ""
-Write-Host "========== COPY REPORT =========="
+Write-Host "Generating SBOM..."
 
-# Kiểm tra thư mục report có tồn tại không
-if (!(Test-Path $WorkspaceReport)) {
-    throw "Trivy report folder not found!"
+docker compose run --rm trivy-sbom
+
+if ($LASTEXITCODE -ne 0) {
+    throw "SBOM generation failed!"
 }
 
-# Tạo thư mục đích nếu chưa có
-if (!(Test-Path $Destination)) {
-    New-Item -ItemType Directory -Path $Destination -Force | Out-Null
+# ==========================
+# 2. Check SBOM
+# ==========================
+
+$WorkspaceSBOM = ".\reports\sbom"
+
+if (!(Test-Path "$WorkspaceSBOM\sbom.json")) {
+    throw "SBOM file not found!"
 }
 
-# Copy toàn bộ báo cáo
+Write-Host "SBOM generated successfully."
+
+# ==========================
+# 3. Scan SBOM (SCA)
+# ==========================
+
+Write-Host ""
+Write-Host "Scanning SBOM..."
+
+docker compose run --rm trivy-sca
+
+if ($LASTEXITCODE -ne 0) {
+    throw "Trivy SCA scan failed!"
+}
+
+Write-Host "SCA scan completed."
+
+# ==========================
+# Workspace reports
+# ==========================
+
+$WorkspaceTrivy = ".\reports\trivy"
+
+# ==========================
+# Local destination
+# ==========================
+
+$SBOMDestination = "D:\Final_Project\DevSecOps\reports\sbom"
+$TrivyDestination = "D:\Final_Project\DevSecOps\reports\trivy"
+
+Write-Host ""
+Write-Host "========== COPY REPORTS =========="
+
+foreach ($Folder in @($SBOMDestination, $TrivyDestination)) {
+
+    if (!(Test-Path $Folder)) {
+        New-Item -ItemType Directory -Path $Folder -Force | Out-Null
+    }
+
+}
+
+# Copy SBOM
 Copy-Item `
-    "$WorkspaceReport\*" `
-    $Destination `
+    "$WorkspaceSBOM\*" `
+    $SBOMDestination `
+    -Recurse `
+    -Force
+
+# Copy SCA Report
+Copy-Item `
+    "$WorkspaceTrivy\*" `
+    $TrivyDestination `
     -Recurse `
     -Force
 
 Write-Host "Reports copied successfully."
-
-# Write-Host ""
-# Write-Host "Destination files:"
-
-# Get-ChildItem $Destination
-
-# Write-Host ""
-# Write-Host "Last modified:"
-# (Get-Item "$Destination\report.json").LastWriteTime
-
-Write-Host ""
-Write-Host "Destination:"
-Write-Host $Destination
 
 Write-Host ""
 Write-Host "Trivy completed successfully."
