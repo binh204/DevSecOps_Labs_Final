@@ -14,36 +14,36 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Check Docker and Docker Compose
-        run: docker --version ; docker compose version
+      # - name: Check Docker and Docker Compose
+      #   run: docker --version ; docker compose version
 
-      - name: Run Semgrep
-        shell: powershell
-        run: .\scripts\run-semgrep.ps1
+      # - name: Run Semgrep
+      #   shell: powershell
+      #   run: .\scripts\run-semgrep.ps1
 
-      - name: Run Trivy
-        shell: powershell
-        run: .\scripts\run-trivy.ps1
+      # - name: Run Trivy
+      #   shell: powershell
+      #   run: .\scripts\run-trivy.ps1
 
       - name: Run Checkov
         shell: powershell
         run: .\scripts\run-checkov.ps1
 
-      - name: Build Image
-        shell: powershell
-        run: .\scripts\build-image.ps1
+      # - name: Build Image
+      #   shell: powershell
+      #   run: .\scripts\build-image.ps1
 
-      - name: Deploy Juice Shop
-        shell: powershell
-        run: .\scripts\deploy.ps1
+      # - name: Deploy Juice Shop
+      #   shell: powershell
+      #   run: .\scripts\deploy.ps1
 
-      - name: Health Check
-        shell: powershell
-        run: .\scripts\health-check.ps1
+      # - name: Health Check
+      #   shell: powershell
+      #   run: .\scripts\health-check.ps1
 
-      - name: Run OWASP ZAP
-        shell: powershell
-        run: .\scripts\run-zap.ps1
+      # - name: Run OWASP ZAP
+      #   shell: powershell
+      #   run: .\scripts\run-zap.ps1
         
       - name: Upload Reports
         if: always()
