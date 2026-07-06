@@ -50,6 +50,22 @@ services:
     volumes:
       - ./reports/zap:/zap/wrk
 
+  checkov:
+    image: bridgecrew/checkov:latest
+    container_name: checkov
+
+    working_dir: /project
+    volumes:
+      - ./:/project
+      - ./reports/checkov:/reports
+
+    command:
+      - -d
+      - /project
+      - -o
+      - json
+      - --output-file-path
+      - /reports
   
     
   

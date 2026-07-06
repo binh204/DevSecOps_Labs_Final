@@ -28,6 +28,10 @@ jobs:
         shell: powershell
         run: .\scripts\run-trivy.ps1
 
+      - name: Run Checkov
+        shell: powershell
+        run: .\scripts\run-checkov.ps1
+
       - name: Build Image
         shell: powershell
         run: .\scripts\build-image.ps1

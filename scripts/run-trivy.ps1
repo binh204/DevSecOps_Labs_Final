@@ -8,14 +8,14 @@ if ($LASTEXITCODE -ne 0) {
     throw "Trivy scan failed!"
 }
 
-Write-Host ""
-Write-Host "========== DEBUG =========="
+# Write-Host ""
+# Write-Host "========== DEBUG =========="
 
-Get-ChildItem .\reports\trivy
+# Get-ChildItem .\reports\trivy
 
-Write-Host ""
-Write-Host "Last modified:"
-(Get-Item ".\reports\trivy\report.json").LastWriteTime
+# Write-Host ""
+# Write-Host "Last modified:"
+# (Get-Item ".\reports\trivy\report.json").LastWriteTime
 
 # ===== Đường dẫn trong workspace của GitHub Actions =====
 $WorkspaceReport = ".\reports\trivy"
@@ -45,14 +45,14 @@ Copy-Item `
 
 Write-Host "Reports copied successfully."
 
-Write-Host ""
-Write-Host "Destination files:"
+# Write-Host ""
+# Write-Host "Destination files:"
 
-Get-ChildItem $Destination
+# Get-ChildItem $Destination
 
-Write-Host ""
-Write-Host "Last modified:"
-(Get-Item "$Destination\report.json").LastWriteTime
+# Write-Host ""
+# Write-Host "Last modified:"
+# (Get-Item "$Destination\report.json").LastWriteTime
 
 Write-Host ""
 Write-Host "Destination:"
