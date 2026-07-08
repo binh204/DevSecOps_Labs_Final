@@ -83,6 +83,5 @@ services:
       - json
       - --output-file-path
       - /workspace/reports/checkov/report.json
-  
     
   

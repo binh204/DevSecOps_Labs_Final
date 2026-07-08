@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   security:
@@ -14,36 +15,33 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      # - name: Check Docker and Docker Compose
-      #   run: docker --version ; docker compose version
+      - name: Check Docker and Docker Compose
+        run: docker --version ; docker compose version
 
-      # - name: Run Semgrep
-      #   shell: powershell
-      #   run: .\scripts\run-semgrep.ps1
+      - name: Run Semgrep
+        run: bash ./scripts/run-semgrep.ps1
 
-      # - name: Run Trivy
-      #   shell: powershell
-      #   run: .\scripts\run-trivy.ps1
+      - name: Run Trivy
+        run: bash ./scripts/run-trivy.ps1
 
       - name: Run Checkov
-        shell: powershell
-        run: .\scripts\run-checkov.ps1
+        run: bash ./scripts/run-checkov.ps1
 
-      # - name: Build Image
-      #   shell: powershell
-      #   run: .\scripts\build-image.ps1
+      - name: Build Image
+        run: bash ./scripts/build-image.ps1
 
-      # - name: Deploy Juice Shop
-      #   shell: powershell
-      #   run: .\scripts\deploy.ps1
+      - name: Push
+        run: |
+          docker push ghcr.io/binh204/juice-shop:${{ github.sha }}
 
-      # - name: Health Check
-      #   shell: powershell
-      #   run: .\scripts\health-check.ps1
+      - name: Deploy Juice Shop
+        run: bash ./scripts/deploy.ps1
 
-      # - name: Run OWASP ZAP
-      #   shell: powershell
-      #   run: .\scripts\run-zap.ps1
+      - name: Health Check
+        run: bash ./scripts/health-check.ps1
+
+      - name: Run OWASP ZAP
+        run: bash ./scripts/run-zap.ps1
         
       - name: Upload Reports
         if: always()
@@ -51,5 +49,3 @@ jobs:
         with:
           name: security-reports-${{ github.run_number }}
           path: reports/
-
-      

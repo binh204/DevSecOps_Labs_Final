@@ -1,18 +1,33 @@
-Write-Host ""
-Write-Host "========== HEALTH CHECK =========="
+# Write-Host ""
+# Write-Host "========== HEALTH CHECK =========="
+# 
+# Start-Sleep -Seconds 10
+# 
+# try {
+#     $response = Invoke-WebRequest http://localhost:3000 -UseBasicParsing
+# 
+#     if ($response.StatusCode -eq 200) {
+#         Write-Host "Juice Shop is healthy."
+#     }
+#     else {
+#         throw "Application unhealthy."
+#     }
+# }
+# catch {
+#     throw "Health check failed."
+# }
 
-Start-Sleep -Seconds 10
+#!/bin/bash
+echo ""
+echo "========== HEALTH CHECK =========="
 
-try {
-    $response = Invoke-WebRequest http://localhost:3000 -UseBasicParsing
+sleep 10
 
-    if ($response.StatusCode -eq 200) {
-        Write-Host "Juice Shop is healthy."
-    }
-    else {
-        throw "Application unhealthy."
-    }
-}
-catch {
-    throw "Health check failed."
-}
+response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000)
+
+if [ "$response" -eq 200 ]; then
+    echo "Juice Shop is healthy."
+else
+    echo "Health check failed." >&2
+    exit 1
+fi

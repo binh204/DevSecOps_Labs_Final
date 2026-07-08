@@ -1,85 +1,160 @@
-Write-Host ""
-Write-Host "========== TRIVY =========="
+# Write-Host ""
+# Write-Host "========== TRIVY =========="
+# 
+# # ==========================
+# # 1. Generate SBOM
+# # ==========================
+# 
+# Write-Host ""
+# Write-Host "Generating SBOM..."
+# 
+# docker compose run --rm trivy-sbom
+# 
+# if ($LASTEXITCODE -ne 0) {
+#     throw "SBOM generation failed!"
+# }
+# 
+# # ==========================
+# # 2. Check SBOM
+# # ==========================
+# 
+# $WorkspaceSBOM = ".\reports\sbom"
+# 
+# if (!(Test-Path "$WorkspaceSBOM\sbom.json")) {
+#     throw "SBOM file not found!"
+# }
+# 
+# Write-Host "SBOM generated successfully."
+# 
+# # ==========================
+# # 3. Scan SBOM (SCA)
+# # ==========================
+# 
+# Write-Host ""
+# Write-Host "Scanning SBOM..."
+# 
+# docker compose run --rm trivy-sca
+# 
+# if ($LASTEXITCODE -ne 0) {
+#     throw "Trivy SCA scan failed!"
+# }
+# 
+# Write-Host "SCA scan completed."
+# 
+# # ==========================
+# # Workspace reports
+# # ==========================
+# 
+# $WorkspaceTrivy = ".\reports\trivy"
+# 
+# # ==========================
+# # Local destination
+# # ==========================
+# 
+# $SBOMDestination = "D:\Final_Project\DevSecOps\reports\sbom"
+# $TrivyDestination = "D:\Final_Project\DevSecOps\reports\trivy"
+# 
+# Write-Host ""
+# Write-Host "========== COPY REPORTS =========="
+# 
+# foreach ($Folder in @($SBOMDestination, $TrivyDestination)) {
+# 
+#     if (!(Test-Path $Folder)) {
+#         New-Item -ItemType Directory -Path $Folder -Force | Out-Null
+#     }
+# 
+# }
+# 
+# # Copy SBOM
+# Copy-Item `
+#     "$WorkspaceSBOM\*" `
+#     $SBOMDestination `
+#     -Recurse `
+#     -Force
+# 
+# # Copy SCA Report
+# Copy-Item `
+#     "$WorkspaceTrivy\*" `
+#     $TrivyDestination `
+#     -Recurse `
+#     -Force
+# 
+# Write-Host "Reports copied successfully."
+# 
+# Write-Host ""
+# Write-Host "Trivy completed successfully."
+
+#!/bin/bash
+echo ""
+echo "========== TRIVY =========="
 
 # ==========================
 # 1. Generate SBOM
 # ==========================
-
-Write-Host ""
-Write-Host "Generating SBOM..."
+echo ""
+echo "Generating SBOM..."
 
 docker compose run --rm trivy-sbom
-
-if ($LASTEXITCODE -ne 0) {
-    throw "SBOM generation failed!"
-}
+if [ $? -ne 0 ]; then
+    echo "SBOM generation failed!" >&2
+    exit 1
+fi
 
 # ==========================
 # 2. Check SBOM
 # ==========================
+WorkspaceSBOM="./reports/sbom"
 
-$WorkspaceSBOM = ".\reports\sbom"
+if [ ! -f "$WorkspaceSBOM/sbom.json" ]; then
+    echo "SBOM file not found!" >&2
+    exit 1
+fi
 
-if (!(Test-Path "$WorkspaceSBOM\sbom.json")) {
-    throw "SBOM file not found!"
-}
-
-Write-Host "SBOM generated successfully."
+echo "SBOM generated successfully."
 
 # ==========================
 # 3. Scan SBOM (SCA)
 # ==========================
-
-Write-Host ""
-Write-Host "Scanning SBOM..."
+echo ""
+echo "Scanning SBOM..."
 
 docker compose run --rm trivy-sca
+if [ $? -ne 0 ]; then
+    echo "Trivy SCA scan failed!" >&2
+    exit 1
+fi
 
-if ($LASTEXITCODE -ne 0) {
-    throw "Trivy SCA scan failed!"
-}
-
-Write-Host "SCA scan completed."
+echo "SCA scan completed."
 
 # ==========================
 # Workspace reports
 # ==========================
-
-$WorkspaceTrivy = ".\reports\trivy"
+WorkspaceTrivy="./reports/trivy"
 
 # ==========================
 # Local destination
 # ==========================
+SBOMDestination="D:/Final_Project/DevSecOps/reports/sbom"
+TrivyDestination="D:/Final_Project/DevSecOps/reports/trivy"
 
-$SBOMDestination = "D:\Final_Project\DevSecOps\reports\sbom"
-$TrivyDestination = "D:\Final_Project\DevSecOps\reports\trivy"
+echo ""
+echo "========== COPY REPORTS =========="
 
-Write-Host ""
-Write-Host "========== COPY REPORTS =========="
+# Check if destination is a Windows path and we are on Linux
+if [[ "$SBOMDestination" =~ ^[A-Za-z]:/ ]] && [[ "$OSTYPE" != "msys" && "$OSTYPE" != "cygwin" ]]; then
+    echo "Windows destination path detected on Linux. Skipping copy."
+else
+    for Folder in "$SBOMDestination" "$TrivyDestination"; do
+        mkdir -p "$Folder"
+    done
 
-foreach ($Folder in @($SBOMDestination, $TrivyDestination)) {
+    # Copy SBOM
+    cp -r "$WorkspaceSBOM"/* "$SBOMDestination/"
+    # Copy SCA Report
+    cp -r "$WorkspaceTrivy"/* "$TrivyDestination/"
 
-    if (!(Test-Path $Folder)) {
-        New-Item -ItemType Directory -Path $Folder -Force | Out-Null
-    }
+    echo "Reports copied successfully."
+fi
 
-}
-
-# Copy SBOM
-Copy-Item `
-    "$WorkspaceSBOM\*" `
-    $SBOMDestination `
-    -Recurse `
-    -Force
-
-# Copy SCA Report
-Copy-Item `
-    "$WorkspaceTrivy\*" `
-    $TrivyDestination `
-    -Recurse `
-    -Force
-
-Write-Host "Reports copied successfully."
-
-Write-Host ""
-Write-Host "Trivy completed successfully."
+echo ""
+echo "Trivy completed successfully."
