@@ -58,13 +58,14 @@ echo "========== OWASP ZAP =========="
 # Tạo thư mục trước để Docker mount với đúng quyền sở hữu của user hiện tại
 mkdir -p ./reports/zap
 
-# Chạy OWASP ZAP Baseline Scan hướng về máy ảo đích (192.168.11.129)
+# Chạy OWASP ZAP Baseline Scan hướng về máy ảo đích (192.168.11.129), xuất thêm XML (-x) cho DefectDojo
 docker compose run --user "$(id -u):$(id -g)" --rm zap \
     zap-baseline.py \
     -t http://192.168.11.129:3000 \
     -r report.html \
     -J report.json \
-    -w report.md
+    -w report.md \
+    -x report.xml
 
 exit_code=$?
 

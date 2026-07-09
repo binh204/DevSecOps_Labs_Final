@@ -95,6 +95,6 @@ upload_scan() {
 upload_scan "Semgrep JSON Report" "/home/soc_server/reports/semgrep/report.json"
 upload_scan "Trivy Scan" "/home/soc_server/reports/trivy/report.json"
 upload_scan "Checkov Scan" "/home/soc_server/reports/checkov/report.json/results_json.json"
-upload_scan "OWASP ZAP XML or JSON" "/home/soc_server/reports/zap/report.json"
+upload_scan "ZAP Scan" "/home/soc_server/reports/zap/report.xml"
 
 echo "Upload reports process completed."
