@@ -32,6 +32,7 @@ jobs:
 
       - name: Push
         run: |
+          docker tag juice-shop:v${{ github.run_number }} ghcr.io/binh204/juice-shop:${{ github.sha }}
           docker push ghcr.io/binh204/juice-shop:${{ github.sha }}
 
       - name: Deploy Juice Shop
