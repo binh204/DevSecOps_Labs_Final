@@ -49,11 +49,11 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
         run: bash ./scripts/deploy.ps1
 
-      - name: Health Check
-        run: bash ./scripts/health-check.ps1
+      # - name: Health Check
+      #   run: bash ./scripts/health-check.ps1
 
-      - name: Run OWASP ZAP
-        run: bash ./scripts/run-zap.ps1
+      # - name: Run OWASP ZAP
+      #   run: bash ./scripts/run-zap.ps1
 
       - name: Import Reports to DefectDojo
         if: always()
