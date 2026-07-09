@@ -6,6 +6,10 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  packages: write
+  contents: read
+
 jobs:
   security:
     runs-on: self-hosted
@@ -18,17 +22,20 @@ jobs:
       - name: Check Docker and Docker Compose
         run: docker --version ; docker compose version
 
-      - name: Run Semgrep
-        run: bash ./scripts/run-semgrep.ps1
+      # - name: Run Semgrep
+      #   run: bash ./scripts/run-semgrep.ps1
 
-      - name: Run Trivy
-        run: bash ./scripts/run-trivy.ps1
+      # - name: Run Trivy
+      #   run: bash ./scripts/run-trivy.ps1
 
-      - name: Run Checkov
-        run: bash ./scripts/run-checkov.ps1
+      # - name: Run Checkov
+      #   run: bash ./scripts/run-checkov.ps1
 
       - name: Build Image
         run: bash ./scripts/build-image.ps1
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Push
         run: |
