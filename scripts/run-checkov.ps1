@@ -76,8 +76,8 @@
 echo ""
 echo "========== CHECKOV =========="
 
-# Chạy Checkov
-docker compose run --rm checkov
+# Chạy Checkov dưới quyền của user hiện tại
+docker compose run --user "$(id -u):$(id -g)" --rm checkov
 exit_code=$?
 
 echo "Checkov Exit Code: $exit_code"
@@ -104,24 +104,7 @@ WorkspaceReport="./reports/checkov"
 Report="$WorkspaceReport/report.json/results_json.json"
 
 # ===== Repo gốc =====
-Destination="D:/Final_Project/DevSecOps/reports/checkov"
-
-echo ""
-echo "========== FORMAT REPORT =========="
-
-if [ ! -f "$Report" ]; then
-    echo "Checkov report file not found!" >&2
-    exit 1
-fi
-
-echo "Formatting JSON..."
-if python3 -c "import json; f=open('$Report', 'r+'); d=json.load(f); f.seek(0); json.dump(d, f, indent=4); f.truncate()" 2>/dev/null; then
-    echo "Report formatted successfully."
-else
-    echo "========== ERROR =========="
-    echo "Failed to format JSON report" >&2
-    exit 1
-fi
+Destination="/home/soc_server/reports/checkov"
 
 echo ""
 echo "========== COPY REPORT =========="
@@ -130,11 +113,10 @@ echo "========== COPY REPORT =========="
 if [[ "$Destination" =~ ^[A-Za-z]:/ ]] && [[ "$OSTYPE" != "msys" && "$OSTYPE" != "cygwin" ]]; then
     echo "Windows destination path detected on Linux. Skipping copy."
 else
-    if [ ! -d "$WorkspaceReport" ]; then
-        echo "Checkov report folder not found!" >&2
+    if [ ! -f "$Report" ]; then
+        echo "Checkov report file not found!" >&2
         exit 1
     fi
-
     mkdir -p "$Destination"
     cp -r "$WorkspaceReport"/* "$Destination/"
     echo "Reports copied successfully."

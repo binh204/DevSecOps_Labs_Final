@@ -55,8 +55,8 @@
 echo ""
 echo "========== OWASP ZAP =========="
 
-# Chạy OWASP ZAP Baseline Scan
-docker compose run --rm zap \
+# Chạy OWASP ZAP Baseline Scan dưới quyền của user hiện tại
+docker compose run --user "$(id -u):$(id -g)" --rm zap \
     zap-baseline.py \
     -t http://host.docker.internal:3000 \
     -r report.html \
@@ -82,7 +82,7 @@ fi
 WorkspaceReport="./reports/zap"
 
 # ===== Đường dẫn repo gốc =====
-Destination="D:/Final_Project/DevSecOps/reports/zap"
+Destination="/home/soc_server/reports/zap"
 
 echo ""
 echo "========== COPY REPORT =========="

@@ -94,7 +94,8 @@ echo "========== TRIVY =========="
 echo ""
 echo "Generating SBOM..."
 
-docker compose run --rm trivy-sbom
+# Chạy dưới quyền user hiện tại
+docker compose run --user "$(id -u):$(id -g)" --rm trivy-sbom
 if [ $? -ne 0 ]; then
     echo "SBOM generation failed!" >&2
     exit 1
@@ -118,7 +119,8 @@ echo "SBOM generated successfully."
 echo ""
 echo "Scanning SBOM..."
 
-docker compose run --rm trivy-sca
+# Chạy dưới quyền user hiện tại
+docker compose run --user "$(id -u):$(id -g)" --rm trivy-sca
 if [ $? -ne 0 ]; then
     echo "Trivy SCA scan failed!" >&2
     exit 1
@@ -134,8 +136,8 @@ WorkspaceTrivy="./reports/trivy"
 # ==========================
 # Local destination
 # ==========================
-SBOMDestination="D:/Final_Project/DevSecOps/reports/sbom"
-TrivyDestination="D:/Final_Project/DevSecOps/reports/trivy"
+SBOMDestination="/home/soc_server/reports/sbom"
+TrivyDestination="/home/soc_server/reports/trivy"
 
 echo ""
 echo "========== COPY REPORTS =========="

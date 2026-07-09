@@ -71,8 +71,8 @@
 echo ""
 echo "========== SEMGREP =========="
 
-# Chạy Semgrep
-docker compose run --rm semgrep
+# Chạy Semgrep dưới quyền của user hiện tại
+docker compose run --user "$(id -u):$(id -g)" --rm semgrep
 if [ $? -ne 0 ]; then
     echo "Semgrep scan failed!" >&2
     exit 1
@@ -82,24 +82,7 @@ fi
 Report="./reports/semgrep/report.json"
 
 # ===== Đường dẫn repo gốc =====
-Destination="D:/Final_Project/DevSecOps/reports/semgrep"
-
-echo ""
-echo "========== FORMAT REPORT =========="
-
-if [ ! -f "$Report" ]; then
-    echo "Semgrep report not found!" >&2
-    exit 1
-fi
-
-echo "Formatting JSON..."
-if python3 -c "import json; f=open('$Report', 'r+'); d=json.load(f); f.seek(0); json.dump(d, f, indent=4); f.truncate()" 2>/dev/null; then
-    echo "Report formatted successfully."
-else
-    echo "========== ERROR =========="
-    echo "Failed to format JSON report" >&2
-    exit 1
-fi
+Destination="/home/soc_server/reports/semgrep"
 
 echo ""
 echo "========== COPY REPORT =========="
@@ -108,6 +91,10 @@ echo "========== COPY REPORT =========="
 if [[ "$Destination" =~ ^[A-Za-z]:/ ]] && [[ "$OSTYPE" != "msys" && "$OSTYPE" != "cygwin" ]]; then
     echo "Windows destination path detected on Linux. Skipping copy."
 else
+    if [ ! -f "$Report" ]; then
+        echo "Semgrep report not found!" >&2
+        exit 1
+    fi
     mkdir -p "$Destination"
     cp -r ./reports/semgrep/* "$Destination/"
     echo "Reports copied successfully."
