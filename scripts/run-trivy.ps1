@@ -99,8 +99,14 @@ mkdir -p ./reports/trivy-cache
 echo ""
 echo "Generating SBOM..."
 
-# Chạy dưới quyền user hiện tại, mount thư mục cache và thiết lập biến môi trường TRIVY_CACHE_DIR
-docker compose run --user "$(id -u):$(id -g)" \
+# Lấy GID của nhóm docker trên host để cấp quyền truy cập Docker socket
+DOCKER_GID=$(getent group docker | cut -d: -f3)
+if [ -z "$DOCKER_GID" ]; then
+    DOCKER_GID=$(id -g)
+fi
+
+# Chạy dưới quyền user hiện tại và nhóm docker để đọc được docker.sock
+docker compose run --user "$(id -u):$DOCKER_GID" \
     -v "$(pwd)/reports/trivy-cache:/tmp/trivy-cache" \
     -e TRIVY_CACHE_DIR=/tmp/trivy-cache \
     --rm trivy-sbom
