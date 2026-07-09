@@ -66,7 +66,11 @@ upload_scan() {
   
   if [ -f "$file_path" ]; then
     echo "Uploading $scan_type report from $file_path..."
-    response=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$DEFECTDOJO_URL/api/v2/import-scan/" \
+    
+    # Tạo file tạm để lưu response body từ DefectDojo
+    local response_file=$(mktemp)
+    
+    local http_code=$(curl -s -o "$response_file" -w "%{http_code}" -X POST "$DEFECTDOJO_URL/api/v2/import-scan/" \
       -H "Authorization: Token $API_TOKEN" \
       -F "active=true" \
       -F "verified=true" \
@@ -74,11 +78,14 @@ upload_scan() {
       -F "engagement=$ENGAGEMENT_ID" \
       -F "file=@$file_path")
     
-    if [ "$response" -eq 201 ] || [ "$response" -eq 200 ]; then
+    if [ "$http_code" -eq 201 ] || [ "$http_code" -eq 200 ]; then
       echo "Successfully uploaded $scan_type."
     else
-      echo "Failed to upload $scan_type. Status code: $response" >&2
+      echo "Failed to upload $scan_type. Status code: $http_code" >&2
+      echo "Error Response: $(cat "$response_file")" >&2
     fi
+    
+    rm -f "$response_file"
   else
     echo "Report file not found for $scan_type at $file_path. Skipping."
   fi
