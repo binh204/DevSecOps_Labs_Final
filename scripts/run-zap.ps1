@@ -55,6 +55,9 @@
 echo ""
 echo "========== OWASP ZAP =========="
 
+# Tạo thư mục trước để Docker mount với đúng quyền sở hữu của user hiện tại
+mkdir -p ./reports/zap
+
 # Chạy OWASP ZAP Baseline Scan dưới quyền của user hiện tại
 docker compose run --user "$(id -u):$(id -g)" --rm zap \
     zap-baseline.py \

@@ -71,6 +71,9 @@
 echo ""
 echo "========== SEMGREP =========="
 
+# Tạo thư mục trước để Docker mount với đúng quyền sở hữu của user hiện tại
+mkdir -p ./reports/semgrep
+
 # Chạy Semgrep dưới quyền của user hiện tại
 docker compose run --user "$(id -u):$(id -g)" --rm semgrep
 if [ $? -ne 0 ]; then

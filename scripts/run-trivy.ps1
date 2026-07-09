@@ -88,6 +88,10 @@
 echo ""
 echo "========== TRIVY =========="
 
+# Tạo thư mục trước để Docker mount với đúng quyền sở hữu của user hiện tại
+mkdir -p ./reports/sbom
+mkdir -p ./reports/trivy
+
 # ==========================
 # 1. Generate SBOM
 # ==========================
