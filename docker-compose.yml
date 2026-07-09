@@ -17,6 +17,14 @@ services:
       - ./juice-shop:/src
       - ./reports/semgrep:/reports
 
+    command:
+      - semgrep
+      - scan
+      - --config=auto
+      - --json
+      - --output=/reports/report.json
+      - /src
+    
   trivy-sbom:
     image: aquasec/trivy:latest
     container_name: trivy-sbom
@@ -26,6 +34,14 @@ services:
     volumes:
       - ./juice-shop:/project
       - ./reports/sbom:/reports
+
+    command:
+      - fs
+      - --format
+      - cyclonedx
+      - --output
+      - /reports/sbom.json
+      - /project
 
   trivy-sca:
     image: aquasec/trivy:latest

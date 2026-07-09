@@ -43,6 +43,10 @@ jobs:
           docker push ghcr.io/binh204/juice-shop:${{ github.sha }}
 
       - name: Deploy Juice Shop
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          IMAGE_TAG: ${{ github.sha }}
         run: bash ./scripts/deploy.ps1
 
       - name: Health Check

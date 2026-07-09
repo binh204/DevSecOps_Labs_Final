@@ -58,10 +58,10 @@ echo "========== OWASP ZAP =========="
 # Tạo thư mục trước để Docker mount với đúng quyền sở hữu của user hiện tại
 mkdir -p ./reports/zap
 
-# Chạy OWASP ZAP Baseline Scan dưới quyền của user hiện tại
+# Chạy OWASP ZAP Baseline Scan hướng về máy ảo đích (192.168.11.129)
 docker compose run --user "$(id -u):$(id -g)" --rm zap \
     zap-baseline.py \
-    -t http://host.docker.internal:3000 \
+    -t http://192.168.11.129:3000 \
     -r report.html \
     -J report.json \
     -w report.md
