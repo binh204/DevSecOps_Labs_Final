@@ -17,31 +17,21 @@ services:
       - ./juice-shop:/src
       - ./reports/semgrep:/reports
 
-    command:
-      - semgrep
-      - scan
-      - --config=auto
-      - --json
-      - --output=/reports/report.json
-      - /src
-    
   trivy-sbom:
     image: aquasec/trivy:latest
     container_name: trivy-sbom
 
-    working_dir: /project
-
     volumes:
-      - ./juice-shop:/project
+      - /var/run/docker.sock:/var/run/docker.sock
       - ./reports/sbom:/reports
 
     command:
-      - fs
+      - image
       - --format
       - cyclonedx
       - --output
       - /reports/sbom.json
-      - /project
+      - juice-shop:latest
 
   trivy-sca:
     image: aquasec/trivy:latest
