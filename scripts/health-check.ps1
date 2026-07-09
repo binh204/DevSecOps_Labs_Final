@@ -26,9 +26,10 @@ PORT="3000"
 
 echo "Waiting for Juice Shop to start on http://$TARGET_IP:$PORT..."
 
-# Thử kiểm tra tối đa 10 lần, mỗi lần cách nhau 5 giây (Tổng cộng 50 giây)
+# Thử kiểm tra tối đa 10 lần, mỗi lần cách nhau 5 giây
 for i in {1..10}; do
-    response=$(curl -s -o /dev/null -w "%{http_code}" http://$TARGET_IP:$PORT)
+    # Thêm giới hạn thời gian kết nối tối đa 3 giây để tránh bị treo nếu bị chặn firewall
+    response=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 3 --max-time 5 http://$TARGET_IP:$PORT)
     
     if [ "$response" -eq 200 ]; then
         echo "Juice Shop is healthy (Connected on attempt $i)!"
