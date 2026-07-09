@@ -88,9 +88,10 @@
 echo ""
 echo "========== TRIVY =========="
 
-# Tạo thư mục trước để Docker mount với đúng quyền sở hữu của user hiện tại
+# Tạo các thư mục báo cáo và thư mục chứa cache cho Trivy
 mkdir -p ./reports/sbom
 mkdir -p ./reports/trivy
+mkdir -p ./reports/trivy-cache
 
 # ==========================
 # 1. Generate SBOM
@@ -98,8 +99,11 @@ mkdir -p ./reports/trivy
 echo ""
 echo "Generating SBOM..."
 
-# Chạy dưới quyền user hiện tại
-docker compose run --user "$(id -u):$(id -g)" --rm trivy-sbom
+# Chạy dưới quyền user hiện tại, mount thư mục cache và thiết lập biến môi trường TRIVY_CACHE_DIR
+docker compose run --user "$(id -u):$(id -g)" \
+    -v "$(pwd)/reports/trivy-cache:/tmp/trivy-cache" \
+    -e TRIVY_CACHE_DIR=/tmp/trivy-cache \
+    --rm trivy-sbom
 if [ $? -ne 0 ]; then
     echo "SBOM generation failed!" >&2
     exit 1
@@ -123,8 +127,11 @@ echo "SBOM generated successfully."
 echo ""
 echo "Scanning SBOM..."
 
-# Chạy dưới quyền user hiện tại
-docker compose run --user "$(id -u):$(id -g)" --rm trivy-sca
+# Chạy dưới quyền user hiện tại, mount thư mục cache và thiết lập biến môi trường TRIVY_CACHE_DIR
+docker compose run --user "$(id -u):$(id -g)" \
+    -v "$(pwd)/reports/trivy-cache:/tmp/trivy-cache" \
+    -e TRIVY_CACHE_DIR=/tmp/trivy-cache \
+    --rm trivy-sca
 if [ $? -ne 0 ]; then
     echo "Trivy SCA scan failed!" >&2
     exit 1
