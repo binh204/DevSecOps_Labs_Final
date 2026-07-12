@@ -22,12 +22,11 @@ jobs:
       - name: Check Docker and Docker Compose
         run: docker --version ; docker compose version
 
-      # - name: Run Semgrep
-      #   run: bash ./scripts/run-semgrep.ps1
+      - name: Run Semgrep
+        run: bash ./scripts/run-semgrep.ps1
 
-
-      # - name: Run Checkov
-      #   run: bash ./scripts/run-checkov.ps1
+      - name: Run Checkov
+        run: bash ./scripts/run-checkov.ps1
 
       - name: Build Image
         run: bash ./scripts/build-image.ps1
@@ -50,8 +49,8 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
         run: bash ./scripts/deploy.ps1
 
-      # - name: Health Check
-      #   run: bash ./scripts/health-check.ps1
+      - name: Health Check
+        run: bash ./scripts/health-check.ps1
 
       - name: Run OWASP ZAP
         run: bash ./scripts/run-zap.ps1
