@@ -18,6 +18,7 @@ services:
       - ./reports/semgrep:/reports
 
     command:
+      - semgrep
       - scan
       - --config
       - auto
