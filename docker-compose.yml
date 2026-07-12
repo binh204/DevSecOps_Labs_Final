@@ -80,6 +80,8 @@ services:
     command:
       - --directory
       - /workspace
+      - --skip-path
+      - /workspace/juice-shop/node_modules
       - --output
       - json
       - --output-file-path
