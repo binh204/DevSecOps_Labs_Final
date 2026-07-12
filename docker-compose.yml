@@ -17,6 +17,14 @@ services:
       - ./juice-shop:/src
       - ./reports/semgrep:/reports
 
+    command:
+      - scan
+      - --config
+      - auto
+      - --json
+      - --output
+      - /reports/report.json
+
   trivy-sbom:
     image: aquasec/trivy:latest
     container_name: trivy-sbom
