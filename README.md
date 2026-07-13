@@ -9,7 +9,7 @@ This project demonstrates a comprehensive, production-ready **DevSecOps Pipeline
 ```mermaid
 graph TD
     %% DevSecOps Pipeline
-    subgraph CI/CD Pipeline (GitHub Actions - Left)
+    subgraph "CI/CD Pipeline (GitHub Actions - Left)"
         A[Developer Push] --> B[Checkout Code]
         B --> C[SAST: Semgrep]
         B --> D[IaC Scan: Checkov]
@@ -22,7 +22,7 @@ graph TD
     end
 
     %% Runtime Monitoring
-    subgraph Runtime Monitoring & SOC (Right)
+    subgraph "Runtime Monitoring & SOC (Right)"
         G --> J(Target Server: Juice Shop App)
         K(Suricata NIDS/NIPS) -- Monitors Network Traffic --> J
         L(Wazuh Agent) -- Collects System logs & Nginx logs --> M[Wazuh Manager SIEM]
