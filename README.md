@@ -85,7 +85,7 @@ To verify the effectiveness of the NIDS (Suricata) + SIEM (Wazuh) runtime defens
   http://192.168.11.129/?id=1%27%20UNION%20SELECT%20NULL,username,password%20FROM%20users--#/
   ```
   <img width="518" height="82" alt="image" src="https://github.com/user-attachments/assets/59cdf256-10ef-4dc3-b785-6f9d2d110a98" />
-  <img width="541" height="197" alt="image" src="https://github.com/user-attachments/assets/c2ee488d-537f-49fa-9721-2fce5a9ee059" />
+  <img width="505" height="242" alt="image" src="https://github.com/user-attachments/assets/ee1de74a-599e-4a0c-b3de-6f060c131c67" />
 
 * **Detection & Response Flow (Multi-layered Protection):**
   1. **Dual Alert Generation on VM1:**
