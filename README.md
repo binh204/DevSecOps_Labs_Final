@@ -67,7 +67,7 @@ To verify the effectiveness of the NIDS (Suricata) + SIEM (Wazuh) runtime defens
 ### Test Case 1: Cross-Site Scripting (XSS) Detection & Blocking
 * **Attack Payload (via Web Browser or Curl):**
   ```bash
-  http://192.168.11.129/?id=1%27%20UNION%20SELECT%20NULL,username,password%20FROM%20users--#/
+  http://192.168.11.129/?q=%3Cscript%3Ealert(%22hacked%22)%3C/script%3E#/
   ```
   <img width="491" height="83" alt="image" src="https://github.com/user-attachments/assets/36df4937-1210-48a4-9afb-f3598a6659d4" />
   <img width="547" height="236" alt="image" src="https://github.com/user-attachments/assets/118bc4af-def6-4887-8af9-19db9499a3a9" />
@@ -82,7 +82,7 @@ To verify the effectiveness of the NIDS (Suricata) + SIEM (Wazuh) runtime defens
 ### Test Case 2: SQL Injection (SQLi) Detection
 * **Attack Payload (via Web Browser or Curl):**
   ```bash
-  http://192.168.11.129/?q=%3Cscript%3Ealert(%22hacked%22)%3C/script%3E#/
+  http://192.168.11.129/?id=1%27%20UNION%20SELECT%20NULL,username,password%20FROM%20users--#/
   ```
   <img width="518" height="82" alt="image" src="https://github.com/user-attachments/assets/59cdf256-10ef-4dc3-b785-6f9d2d110a98" />
   <img width="541" height="197" alt="image" src="https://github.com/user-attachments/assets/c2ee488d-537f-49fa-9721-2fce5a9ee059" />
