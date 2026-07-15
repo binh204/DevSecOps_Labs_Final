@@ -77,7 +77,7 @@ To verify the effectiveness of the NIDS (Suricata) + SIEM (Wazuh) runtime defens
      * **Suricata NIDS** intercepts the network packets, decodes the HTTP URI, matches it against rule `1000003` (`CUSTOM XSS Attempt Detected`), and writes an alert to `/var/log/suricata/eve.json`.
      * **Nginx Web Server** logs the HTTP request details and payload to `/var/log/nginx/access.log`.
   2. **Wazuh Agent Collection:** The Wazuh Agent running on VM1 monitors both `eve.json` and `access.log` simultaneously, reads the new lines, and securely transmits them to **Wazuh Manager** on VM2.
-  3. **Wazuh Manager Correlation & Action:** Wazuh Manager parses and correlates the incoming logs, matching them against **Rule ID `100004`** (Suricata Alert) and **Rule ID `31106`** (Nginx XSS Alert). Since both alerts match critical security thresholds, Wazuh Manager triggers the **Active Response** mechanism to instruct VM1 to drop the attacker's IP via `iptables` for 10 minutes.
+  3. **Wazuh Manager Correlation & Action:** Wazuh Manager parses and correlates the incoming logs, matching them against **Rule ID `100004`** (Suricata Alert) and **Rule ID `31105`** (Nginx XSS Alert). Since both alerts match critical security thresholds, Wazuh Manager triggers the **Active Response** mechanism to instruct VM1 to drop the attacker's IP via `iptables` for 10 minutes.
 
 ### Test Case 2: SQL Injection (SQLi) Detection
 * **Attack Payload (via Web Browser or Curl):**
@@ -92,7 +92,7 @@ To verify the effectiveness of the NIDS (Suricata) + SIEM (Wazuh) runtime defens
      * **Suricata NIDS** intercepts the network packets, decodes the HTTP URI, matches it against rule `1000004` (`CUSTOM SQLi Attempt Detected`), and writes an alert to `/var/log/suricata/eve.json`.
      * **Nginx Web Server** logs the SQLi attack payload in the HTTP query parameters to `/var/log/nginx/access.log`.
   2. **Wazuh Agent Collection:** The Wazuh Agent on VM1 monitors both `eve.json` and `access.log` simultaneously, forwarding the new events to **Wazuh Manager** on VM2.
-  3. **Wazuh Manager Correlation:** Wazuh Manager correlates the logs, matching **Rule ID `100004`** (Suricata custom alert) and **Rule ID `31105`** (Nginx SQLi alert), raising the severity levels to `10`, logging them to the SIEM dashboard, and triggering Active Response to blacklist the source IP.
+  3. **Wazuh Manager Correlation:** Wazuh Manager correlates the logs, matching **Rule ID `100004`** (Suricata custom alert) and **Rule ID `31164`** (Nginx SQLi alert), logging them to the SIEM dashboard, and triggering Active Response to blacklist the source IP.
 
 | Trigger Rule ID | Event Type | Mitigation Action | Block Timeout |
 | :--- | :--- | :--- | :--- |
