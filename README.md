@@ -70,7 +70,7 @@ To verify the effectiveness of the NIDS (Suricata) + SIEM (Wazuh) runtime defens
   http://192.168.11.129/?q=%3Cscript%3Ealert(%22hacked%22)%3C/script%3E#/
   ```
   <img width="491" height="83" alt="image" src="https://github.com/user-attachments/assets/36df4937-1210-48a4-9afb-f3598a6659d4" />
-  <img width="547" height="236" alt="image" src="https://github.com/user-attachments/assets/118bc4af-def6-4887-8af9-19db9499a3a9" />
+  <img width="503" height="235" alt="image" src="https://github.com/user-attachments/assets/fdf50939-04a4-48c9-8e14-fd919fbd2127" />
 
 * **Detection & Response Flow (Multi-layered Protection):**
   1. **Dual Alert Generation on VM1:**
@@ -92,7 +92,7 @@ To verify the effectiveness of the NIDS (Suricata) + SIEM (Wazuh) runtime defens
      * **Suricata NIDS** intercepts the network packets, decodes the HTTP URI, matches it against rule `1000004` (`CUSTOM SQLi Attempt Detected`), and writes an alert to `/var/log/suricata/eve.json`.
      * **Nginx Web Server** logs the SQLi attack payload in the HTTP query parameters to `/var/log/nginx/access.log`.
   2. **Wazuh Agent Collection:** The Wazuh Agent on VM1 monitors both `eve.json` and `access.log` simultaneously, forwarding the new events to **Wazuh Manager** on VM2.
-  3. **Wazuh Manager Correlation:** Wazuh Manager correlates the logs, matching **Rule ID `100004`** (Suricata custom alert) and **Rule ID `31164`** (Nginx SQLi alert), logging them to the SIEM dashboard, and triggering Active Response to blacklist the source IP.
+  3. **Wazuh Manager Correlation:** Wazuh Manager correlates the logs, matching **Rule ID `100004`** (Suricata custom alert) and **Rule ID `31103`** (Nginx SQLi alert), logging them to the SIEM dashboard, and triggering Active Response to blacklist the source IP.
 
 | Trigger Rule ID | Event Type | Mitigation Action | Block Timeout |
 | :--- | :--- | :--- | :--- |
