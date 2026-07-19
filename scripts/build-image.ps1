@@ -40,7 +40,7 @@ fi
 
 echo "Building image version: $Version"
 
-docker build netwwork host \
+docker build \
     -t juice-shop:latest \
     -t juice-shop:$Version \
     ./juice-shop
