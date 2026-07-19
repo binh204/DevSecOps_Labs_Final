@@ -1,3 +1,5 @@
 reports/
 *.log
 .env    
+scripts/deploy-suricata.ps1
+
