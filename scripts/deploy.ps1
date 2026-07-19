@@ -50,7 +50,7 @@ fi
 ssh -o StrictHostKeyChecking=no "$TARGET_USER@$TARGET_IP" "docker stop juice-shop || true && docker rm -f juice-shop || true"
 
 # 4. Khởi chạy container mới
-ssh -o StrictHostKeyChecking=no "$TARGET_USER@$TARGET_IP" "docker run -d --name juice-shop -p 3000:3000 -e \"NODE_ENV=unsafe\" --restart always \$IMAGE_NAME"
+ssh -o StrictHostKeyChecking=no "$TARGET_USER@$TARGET_IP" "docker run -d --name juice-shop -p 3000:3000 --restart always $IMAGE_NAME"
 if [ $? -ne 0 ]; then
     echo "Docker run on target server failed!" >&2
     exit 1
