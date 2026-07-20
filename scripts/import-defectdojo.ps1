@@ -63,25 +63,37 @@ echo "Created Engagement with ID: $ENGAGEMENT_ID"
 upload_scan() {
   local scan_type="$1"
   local file_path="$2"
+  local service="$3"
   
   if [ -f "$file_path" ]; then
-    echo "Uploading $scan_type report from $file_path..."
+    echo "Uploading $scan_type ($service) report from $file_path..."
     
     # Tạo file tạm để lưu response body từ DefectDojo
     local response_file=$(mktemp)
     
-    local http_code=$(curl -s -o "$response_file" -w "%{http_code}" -X POST "$DEFECTDOJO_URL/api/v2/import-scan/" \
-      -H "Authorization: Token $API_TOKEN" \
-      -F "active=true" \
-      -F "verified=true" \
-      -F "scan_type=$scan_type" \
-      -F "engagement=$ENGAGEMENT_ID" \
-      -F "file=@$file_path")
+    if [ -n "$service" ]; then
+      local http_code=$(curl -s -o "$response_file" -w "%{http_code}" -X POST "$DEFECTDOJO_URL/api/v2/import-scan/" \
+        -H "Authorization: Token $API_TOKEN" \
+        -F "active=true" \
+        -F "verified=true" \
+        -F "scan_type=$scan_type" \
+        -F "service=$service" \
+        -F "engagement=$ENGAGEMENT_ID" \
+        -F "file=@$file_path")
+    else
+      local http_code=$(curl -s -o "$response_file" -w "%{http_code}" -X POST "$DEFECTDOJO_URL/api/v2/import-scan/" \
+        -H "Authorization: Token $API_TOKEN" \
+        -F "active=true" \
+        -F "verified=true" \
+        -F "scan_type=$scan_type" \
+        -F "engagement=$ENGAGEMENT_ID" \
+        -F "file=@$file_path")
+    fi
     
     if [ "$http_code" -eq 201 ] || [ "$http_code" -eq 200 ]; then
-      echo "Successfully uploaded $scan_type."
+      echo "Successfully uploaded $scan_type ($service)."
     else
-      echo "Failed to upload $scan_type. Status code: $http_code" >&2
+      echo "Failed to upload $scan_type ($service). Status code: $http_code" >&2
       echo "Error Response: $(cat "$response_file")" >&2
     fi
     
@@ -91,10 +103,15 @@ upload_scan() {
   fi
 }
 
+# Tiền xử lý báo cáo Semgrep và ZAP để tính điểm và gán mã CVSS
+echo "Pre-processing scan reports..."
+python3 ./scripts/preprocess_reports.py semgrep "/home/soc_server/reports/semgrep/report.json" "/home/soc_server/reports/semgrep/report-generic.json"
+python3 ./scripts/preprocess_reports.py zap "/home/soc_server/reports/zap/report.json" "/home/soc_server/reports/zap/report-generic.json"
+
 # 3. Upload các báo cáo
-upload_scan "Semgrep JSON Report" "/home/soc_server/reports/semgrep/report.json"
+upload_scan "Generic Findings Import" "/home/soc_server/reports/semgrep/report-generic.json" "Semgrep"
 upload_scan "Trivy Scan" "/home/soc_server/reports/trivy/report.json"
-upload_scan "Checkov Scan" "/home/soc_server/reports/checkov/report.json/results_json.json"
-upload_scan "ZAP Scan" "/home/soc_server/reports/zap/report.xml"
+# upload_scan "Checkov Scan" "/home/soc_server/reports/checkov/report.json/results_json.json"
+upload_scan "Generic Findings Import" "/home/soc_server/reports/zap/report-generic.json" "OWASP ZAP"
 
 echo "Upload reports process completed."

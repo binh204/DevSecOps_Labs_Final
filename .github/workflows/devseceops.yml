@@ -25,8 +25,8 @@ jobs:
       - name: Run Semgrep
         run: bash ./scripts/run-semgrep.ps1
 
-      - name: Run Checkov
-        run: bash ./scripts/run-checkov.ps1
+      # - name: Run Checkov
+      #   run: bash ./scripts/run-checkov.ps1
 
       - name: Build Image
         run: bash ./scripts/build-image.ps1

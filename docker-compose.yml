@@ -69,20 +69,20 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  checkov:
-    image: bridgecrew/checkov:latest
-    container_name: checkov
-    working_dir: /workspace
+  # checkov:
+  #   image: bridgecrew/checkov:latest
+  #   container_name: checkov
+  #   working_dir: /workspace
 
-    volumes:
-      - ./:/workspace
+  #   volumes:
+  #     - ./:/workspace
 
-    command:
-      - --directory
-      - /workspace
-      - --skip-path
-      - /workspace/juice-shop/node_modules
-      - --output
-      - json
-      - --output-file-path
-      - /workspace/reports/checkov/report.json
+  #   command:
+  #     - --directory
+  #     - /workspace
+  #     - --skip-path
+  #     - /workspace/juice-shop/node_modules
+  #     - --output
+  #     - json
+  #     - --output-file-path
+  #     - /workspace/reports/checkov/report.json

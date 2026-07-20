@@ -2,4 +2,5 @@ reports/
 *.log
 .env    
 scripts/deploy-suricata.ps1
+scripts/run-checkov.ps1
 
