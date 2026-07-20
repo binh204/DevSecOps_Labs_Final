@@ -57,8 +57,8 @@ def convert_semgrep(input_path, output_path):
             finding["cwe"] = cwe_val
             cvss = get_cvss(cwe_val)
             if cvss:
-                finding["CVSSV3"] = cvss["vector"]
-                finding["CVSSV3_score"] = cvss["score"]
+                finding["cvssv3"] = cvss["vector"]
+                finding["cvssv3_score"] = cvss["score"]
                 
         generic_findings.append(finding)
         
@@ -116,8 +116,8 @@ def convert_zap(input_path, output_path):
                 finding["cwe"] = cwe_val
                 cvss = get_cvss(cwe_val)
                 if cvss:
-                    finding["CVSSV3"] = cvss["vector"]
-                    finding["CVSSV3_score"] = cvss["score"]
+                    finding["cvssv3"] = cvss["vector"]
+                    finding["cvssv3_score"] = cvss["score"]
                     
             generic_findings.append(finding)
             
