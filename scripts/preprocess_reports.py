@@ -3,19 +3,26 @@ import sys
 import os
 import re
 
-CWE_CVSS_MAP = {
-    79:  {"score": 6.1, "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N"},  # XSS
-    89:  {"score": 9.8, "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"},  # SQLi
-    22:  {"score": 7.5, "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"},  # Path Traversal
-    502: {"score": 9.8, "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"},  # Deserialization
-    352: {"score": 8.1, "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:N"},  # CSRF
-    94:  {"score": 10.0,"vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H"},  # Code Injection
-    611: {"score": 9.8, "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N"},  # XXE
-    200: {"score": 7.5, "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"},  # Info Disclosure
-    287: {"score": 9.8, "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"}   # Authentication
-}
+CWE_CVSS_MAP = {}
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cwe_cvss_db.json')
+
+def load_db():
+    global CWE_CVSS_MAP
+    if os.path.exists(DB_PATH):
+        try:
+            with open(DB_PATH, 'r', encoding='utf-8') as f:
+                raw_map = json.load(f)
+                # Convert keys to integers
+                CWE_CVSS_MAP = {int(k): v for k, v in raw_map.items()}
+            print(f"Loaded {len(CWE_CVSS_MAP)} CWE mappings from {DB_PATH}")
+        except Exception as e:
+            print(f"Error loading {DB_PATH}: {e}")
+    else:
+        print(f"Warning: Database file {DB_PATH} not found. No CVSS mappings will be applied.")
 
 def get_cvss(cwe_id):
+    if not CWE_CVSS_MAP:
+        load_db()
     return CWE_CVSS_MAP.get(cwe_id)
 
 def convert_semgrep(input_path, output_path):
