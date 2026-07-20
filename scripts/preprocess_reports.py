@@ -57,14 +57,17 @@ def convert_semgrep(input_path, output_path):
             finding["cwe"] = cwe_val
             cvss = get_cvss(cwe_val)
             if cvss:
-                finding["cvssv3"] = cvss["vector"]
-                finding["cvssv3_score"] = cvss["score"]
+                finding["CVSSV3"] = cvss["vector"]
+                finding["CVSSV3_score"] = cvss["score"]
                 
         generic_findings.append(finding)
         
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    output_data = {
+        "findings": generic_findings
+    }
     with open(output_path, 'w', encoding='utf-8') as f:
-        json.dump(generic_findings, f, indent=2, ensure_ascii=False)
+        json.dump(output_data, f, indent=2, ensure_ascii=False)
     print(f"Semgrep report converted successfully to {output_path}")
 
 def convert_zap(input_path, output_path):
@@ -113,14 +116,17 @@ def convert_zap(input_path, output_path):
                 finding["cwe"] = cwe_val
                 cvss = get_cvss(cwe_val)
                 if cvss:
-                    finding["cvssv3"] = cvss["vector"]
-                    finding["cvssv3_score"] = cvss["score"]
+                    finding["CVSSV3"] = cvss["vector"]
+                    finding["CVSSV3_score"] = cvss["score"]
                     
             generic_findings.append(finding)
             
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    output_data = {
+        "findings": generic_findings
+    }
     with open(output_path, 'w', encoding='utf-8') as f:
-        json.dump(generic_findings, f, indent=2, ensure_ascii=False)
+        json.dump(output_data, f, indent=2, ensure_ascii=False)
     print(f"ZAP report converted successfully to {output_path}")
 
 def main():
