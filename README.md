@@ -143,6 +143,6 @@ Wazuh Manager is configured with the following active response policies to autom
 | **`5760`**             | SSH Brute Force Attempt          | `firewall-drop` (Block via `iptables`) | **180 seconds** (3 mins) |
 | **`31105`**            | Web XSS Attempt (via Nginx log)  | `firewall-drop` (Block via `iptables`) | **300 seconds** (5 mins) |
 | **`31106`**            | Web SQLi Attempt (via Nginx log) | `firewall-drop` (Block via `iptables`) | **300 seconds** (5 mins) |
-| **`100002`, `100003`** | Custom Suricata XSS/SQLi Alerts  | `firewall-drop` (Block via `iptables`) | **300 seconds** (5 mins) |
+| **`100004`, `100003`** | Custom Suricata XSS/SQLi Alerts  | `firewall-drop` (Block via `iptables`) | **300 seconds** (5 mins) |
 
 ---
