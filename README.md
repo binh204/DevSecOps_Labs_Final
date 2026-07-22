@@ -146,25 +146,3 @@ Wazuh Manager is configured with the following active response policies to autom
 | **`100002`, `100003`** | Custom Suricata XSS/SQLi Alerts  | `firewall-drop` (Block via `iptables`) | **300 seconds** (5 mins) |
 
 ---
-
-## ─── Quantitative Security Metrics & Results ───
-
-The implementation of this integrated DevSecOps and SOC platform yielded the following quantifiable results:
-
-- **Threat Detection Rate:** **100%** detection and log generation for simulated XSS, SQLi, and port scanning attacks.
-- **Mean Time to Detect (MTTD):** **< 1 second** from packet arrival at VM1's card interface to alert generation.
-- **Mean Time to Respond (MTTR):** **< 2 seconds** for Wazuh Active Response to automatically execute `iptables` rules and block malicious traffic.
-- **Automated Scan Execution:** **100%** of code deployments are audited by SAST, SCA, IaC, and DAST tools.
-- **Triage Efficiency:** Centralizing findings in DefectDojo reduces manual report compilation and vulnerability deduplication time by **90%**.
-- **Zero Packet Drops:** Configuring network driver optimizations (`ethtool`) to disable checksum offloading ensured **100%** traffic visibility for Suricata virtual packet capture.
-
----
-
-## ─── Resume Bullet Points for Candidates ───
-
-_(Great for highlighting on your CV/LinkedIn)_
-
-- **DevSecOps Integration:** Engineered a fully automated GitHub Actions pipeline integrating SAST (Semgrep), IaC (Checkov), SCA (Trivy), and DAST (OWASP ZAP), automating vulnerability tracking by exporting all reports directly to DefectDojo.
-- **SIEM & SOC Operations:** Architected a runtime threat detection mechanism utilizing Suricata (NIDS) and Wazuh (SIEM), monitoring real-time network traffic and system state changes across servers.
-- **Automated Incident Response:** Implemented Wazuh Active Response to dynamically mitigate attacks (XSS, SQLi) in real-time by automatically blacklisting malicious IPs using Linux `iptables` rules.
-- **Performance Optimization:** Resolved virtualization conflicts (Checksum Offloading issues) by tweaking TCP stack configurations and network drivers (`ethtool`) to ensure 100% network intrusion detection visibility.
