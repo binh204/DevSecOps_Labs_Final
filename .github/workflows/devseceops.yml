@@ -12,9 +12,8 @@ permissions:
 
 jobs:
   security:
-    runs-on: self-hosted
-    timeout-minutes: 30
-
+    runs-on: [self-hosted, Linux]
+    timeout-minutes: 3
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
