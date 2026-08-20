@@ -61,7 +61,8 @@ mkdir -p ./reports/zap
 # Chạy OWASP ZAP Baseline Scan hướng về máy ảo đích (192.168.11.129), xuất thêm XML (-x) cho DefectDojo
 docker compose run --user "$(id -u):$(id -g)" --rm zap \
     zap-baseline.py \
-    -t http://192.168.11.129:3000 \
+    # -t http://192.168.11.129:3000 \
+    -t https://devsecops-labs-final.onrender.com \
     -r report.html \
     -J report.json \
     -w report.md \

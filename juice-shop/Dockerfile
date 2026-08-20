@@ -1,9 +1,10 @@
 FROM node:24 AS installer
-COPY . /juice-shop
 WORKDIR /juice-shop
+COPY package*.json ./
 RUN npm install -g typescript@^6.0.3
 RUN npm install --omit=dev
 RUN npm dedupe --omit=dev
+COPY . /juice-shop
 RUN rm -rf frontend/node_modules
 RUN rm -rf frontend/.angular
 RUN rm -rf frontend/src/assets
