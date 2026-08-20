@@ -13,7 +13,7 @@ permissions:
 jobs:
   security:
     runs-on: [self-hosted, Linux]
-    timeout-minutes: 20
+    timeout-minutes: 40
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
