@@ -32,32 +32,39 @@ IMAGE_NAME="ghcr.io/binh204/juice-shop:$IMAGE_TAG"
 
 echo "Deploying image: $IMAGE_NAME to $TARGET_USER@$TARGET_IP..."
 
+# Options SSH dùng chung: -n tránh treo stdin, StrictHostKeyChecking=no
+SSH_CMD="ssh -n -o StrictHostKeyChecking=no -o ConnectTimeout=10 $TARGET_USER@$TARGET_IP"
+
 # 1. Đăng nhập vào GHCR trên target_server
-ssh -o StrictHostKeyChecking=no "$TARGET_USER@$TARGET_IP" "echo '$GITHUB_TOKEN' | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin"
+echo "1. Logging in to GHCR on target server..."
+$SSH_CMD "echo '$GITHUB_TOKEN' | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin"
 if [ $? -ne 0 ]; then
     echo "Docker login on target server failed!" >&2
     exit 1
 fi
 
 # 2. Pull image mới nhất về target_server
-ssh -o StrictHostKeyChecking=no "$TARGET_USER@$TARGET_IP" "docker pull $IMAGE_NAME"
+echo "2. Pulling image $IMAGE_NAME..."
+$SSH_CMD "docker pull $IMAGE_NAME"
 if [ $? -ne 0 ]; then
     echo "Docker pull on target server failed!" >&2
     exit 1
 fi
 
-# 3. Tắt và xóa container cũ nếu có
-ssh -o StrictHostKeyChecking=no "$TARGET_USER@$TARGET_IP" "docker stop juice-shop || true && docker rm -f juice-shop || true"
+# 3. Xóa ngay container cũ (dùng rm -f trực tiếp thay vì stop để tránh bị treo)
+echo "3. Removing old juice-shop container..."
+$SSH_CMD "docker rm -f juice-shop 2>/dev/null || true"
 
 # 4. Khởi chạy container mới
-ssh -o StrictHostKeyChecking=no "$TARGET_USER@$TARGET_IP" "docker run -d --name juice-shop -p 3000:3000 --restart always $IMAGE_NAME"
+echo "4. Starting new juice-shop container..."
+$SSH_CMD "docker run -d --name juice-shop -p 3000:3000 --restart always $IMAGE_NAME"
 if [ $? -ne 0 ]; then
     echo "Docker run on target server failed!" >&2
     exit 1
 fi
 
-# 5. Dọn dẹp các Docker Image cũ không còn sử dụng trên Target Server
-echo "Cleaning up old docker images on target server..."
-ssh -o StrictHostKeyChecking=no "$TARGET_USER@$TARGET_IP" "docker image prune -af --filter 'until=24h' || true"
+# 5. Dọn dẹp các dangling layer rác (dùng prune -f an toàn, không gây treo daemon)
+echo "5. Cleaning up dangling images on target server..."
+$SSH_CMD "docker image prune -f 2>/dev/null || true"
 
 echo "Deploy completed successfully to target server."

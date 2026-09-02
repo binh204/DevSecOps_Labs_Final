@@ -7,14 +7,16 @@ TARGET_USER="target_server"
 
 echo "Deploying Cloudflare Quick Tunnel on $TARGET_USER@$TARGET_IP..."
 
-# 1. Tắt và xóa container cloudflared cũ nếu đang chạy
+SSH_CMD="ssh -n -o StrictHostKeyChecking=no -o ConnectTimeout=10 $TARGET_USER@$TARGET_IP"
+
+# 1. Tắt và xóa container cloudflared cũ nếu đang chạy (dùng rm -f trực tiếp)
 echo "Stopping any existing cloudflared container..."
-ssh -o StrictHostKeyChecking=no "$TARGET_USER@$TARGET_IP" "docker stop cloudflared || true && docker rm -f cloudflared || true"
+$SSH_CMD "docker rm -f cloudflared 2>/dev/null || true"
 
 # 2. Khởi chạy cloudflared container trỏ vào Nginx Reverse Proxy (http://localhost:80)
 # Nginx lắng nghe ở port 80, chuyển tiếp tới juice-shop (port 3000) và ghi log cho Wazuh
 echo "Starting cloudflared container targeting Nginx (http://localhost:80)..."
-ssh -o StrictHostKeyChecking=no "$TARGET_USER@$TARGET_IP" "docker run -d --name cloudflared --network host cloudflare/cloudflared:latest tunnel --url http://localhost:80"
+$SSH_CMD "docker run -d --name cloudflared --network host cloudflare/cloudflared:latest tunnel --url http://localhost:80"
 
 if [ $? -ne 0 ]; then
     echo "ERROR: Failed to start cloudflared container on target server!" >&2
@@ -25,12 +27,12 @@ fi
 echo "Waiting for Cloudflare Tunnel to establish..."
 sleep 5
 
-PUBLIC_URL=$(ssh -o StrictHostKeyChecking=no "$TARGET_USER@$TARGET_IP" "docker logs cloudflared 2>&1" | grep -o 'https://[-a-zA-Z0-9]*\.trycloudflare\.com' | head -n 1)
+PUBLIC_URL=$($SSH_CMD "docker logs cloudflared 2>&1" | grep -o 'https://[-a-zA-Z0-9]*\.trycloudflare\.com' | head -n 1)
 
 if [ -z "$PUBLIC_URL" ]; then
     echo "Retrying to fetch Quick Tunnel URL..."
     sleep 5
-    PUBLIC_URL=$(ssh -o StrictHostKeyChecking=no "$TARGET_USER@$TARGET_IP" "docker logs cloudflared 2>&1" | grep -o 'https://[-a-zA-Z0-9]*\.trycloudflare\.com' | head -n 1)
+    PUBLIC_URL=$($SSH_CMD "docker logs cloudflared 2>&1" | grep -o 'https://[-a-zA-Z0-9]*\.trycloudflare\.com' | head -n 1)
 fi
 
 if [ -z "$PUBLIC_URL" ]; then
