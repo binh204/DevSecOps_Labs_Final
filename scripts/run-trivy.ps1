@@ -142,11 +142,12 @@ docker compose run --pull missing --user "$(id -u):$(id -g)" \
     --rm trivy-sca
 
 if [ $? -ne 0 ]; then
-    echo "Primary DB download failed or timed out. Retrying Trivy SCA scan with cached DB (--skip-db-update)..."
+    echo "Primary DB download failed or timed out. Retrying Trivy SCA scan with cached DB (TRIVY_SKIP_DB_UPDATE=true)..."
     docker compose run --pull missing --user "$(id -u):$(id -g)" \
         -v "$(pwd)/reports/trivy-cache:/tmp/trivy-cache" \
         -e TRIVY_CACHE_DIR=/tmp/trivy-cache \
-        --rm trivy-sca --skip-db-update
+        -e TRIVY_SKIP_DB_UPDATE=true \
+        --rm trivy-sca
 fi
 
 if [ $? -ne 0 ]; then
