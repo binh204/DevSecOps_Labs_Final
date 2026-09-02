@@ -60,7 +60,7 @@ mkdir -p ./reports/zap
 
 # Chạy OWASP ZAP Baseline Scan hướng về máy ảo đích (192.168.11.129), xuất thêm XML (-x) cho DefectDojo
 docker compose run --pull missing --user "$(id -u):$(id -g)" --rm zap \
-    zap-baseline.py \
+    /zap/zap-baseline.py \
     -t http://192.168.11.129:3000 \
     -r report.html \
     -J report.json \
@@ -75,10 +75,10 @@ echo "ZAP Exit Code: $exit_code"
 
 # 0 = Không có cảnh báo
 # 1 hoặc 2 = Có cảnh báo/lỗ hổng (vẫn cho phép pipeline tiếp tục)
-# 3 = Lỗi thực sự khi chạy ZAP
+# Khác 0, 1, 2 (ví dụ 3 hoặc 127) = Lỗi thực sự khi chạy ZAP
 
-if [ $exit_code -eq 3 ]; then
-    echo "OWASP ZAP execution failed!" >&2
+if [ $exit_code -ne 0 ] && [ $exit_code -ne 1 ] && [ $exit_code -ne 2 ]; then
+    echo "OWASP ZAP execution failed with exit code $exit_code!" >&2
     exit 1
 fi
 
