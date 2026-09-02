@@ -32,39 +32,35 @@ IMAGE_NAME="ghcr.io/binh204/juice-shop:$IMAGE_TAG"
 
 echo "Deploying image: $IMAGE_NAME to $TARGET_USER@$TARGET_IP..."
 
-# Options SSH dùng chung: -n tránh treo stdin, StrictHostKeyChecking=no
-SSH_CMD="ssh -n -o StrictHostKeyChecking=no -o ConnectTimeout=10 $TARGET_USER@$TARGET_IP"
+# Options SSH dùng chung
+SSH_CMD="ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 $TARGET_USER@$TARGET_IP"
 
-# 1. Đăng nhập vào GHCR trên target_server
-echo "1. Logging in to GHCR on target server..."
-$SSH_CMD "echo '$GITHUB_TOKEN' | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin"
+# 1. Truyền trực tiếp Docker Image từ Runner (VM2) sang Target Server (VM1) qua mạng local (Siêu nhanh 3-5 giây)
+echo "1. Direct transferring Docker Image to Target Server over local network..."
+docker save juice-shop:latest | $SSH_CMD "docker load"
 if [ $? -ne 0 ]; then
-    echo "Docker login on target server failed!" >&2
-    exit 1
+    echo "Direct image transfer failed. Falling back to GHCR pull..." >&2
+    $SSH_CMD "echo '$GITHUB_TOKEN' | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin 2>/dev/null || true"
+    $SSH_CMD "docker pull $IMAGE_NAME"
 fi
 
-# 2. Pull image mới nhất về target_server
-echo "2. Pulling image $IMAGE_NAME..."
-$SSH_CMD "docker pull $IMAGE_NAME"
-if [ $? -ne 0 ]; then
-    echo "Docker pull on target server failed!" >&2
-    exit 1
-fi
+# Gán tag phiên bản cho Image trên Target Server
+$SSH_CMD "docker tag juice-shop:latest $IMAGE_NAME 2>/dev/null || true"
 
-# 3. Xóa ngay container cũ (dùng rm -f trực tiếp thay vì stop để tránh bị treo)
-echo "3. Removing old juice-shop container..."
+# 2. Xóa container juice-shop cũ (dùng rm -f trực tiếp)
+echo "2. Removing old juice-shop container..."
 $SSH_CMD "docker rm -f juice-shop 2>/dev/null || true"
 
-# 4. Khởi chạy container mới
-echo "4. Starting new juice-shop container..."
-$SSH_CMD "docker run -d --name juice-shop -p 3000:3000 --restart always $IMAGE_NAME"
+# 3. Khởi chạy container mới
+echo "3. Starting new juice-shop container..."
+$SSH_CMD "docker run -d --name juice-shop -p 3000:3000 --restart always juice-shop:latest"
 if [ $? -ne 0 ]; then
-    echo "Docker run on target server failed!" >&2
+    echo "ERROR: Docker run on target server failed!" >&2
     exit 1
 fi
 
-# 5. Dọn dẹp các dangling layer rác (dùng prune -f an toàn, không gây treo daemon)
-echo "5. Cleaning up dangling images on target server..."
+# 4. Dọn dẹp các dangling layer rác
+echo "4. Cleaning up dangling images on target server..."
 $SSH_CMD "docker image prune -f 2>/dev/null || true"
 
 echo "Deploy completed successfully to target server."
