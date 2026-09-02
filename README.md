@@ -64,7 +64,8 @@ On every code commit push, GitHub Actions will trigger the self-hosted runner on
 3. **Build & Release:** Builds the Docker image and pushes it to GitHub Container Registry (GHCR).
 4. **Automated SSH Deploy:** Remotely instructs VM1 to pull the image and run the container.
 5. **Dynamic Analysis:** Launches OWASP ZAP (DAST) to attack the running application on VM1 and scan for dynamic loopholes.
-6. **Centralization:** Uploads all JSON reports to DefectDojo.
+6. **Public Deployment:** Launches Cloudflare Quick Tunnel (`cloudflared`) pointing to Nginx Reverse Proxy on VM1, exposing the application publicly while preserving Nginx logging for Wazuh SIEM & Active Response.
+7. **Centralization:** Uploads all JSON reports to DefectDojo.
 
 ---
 

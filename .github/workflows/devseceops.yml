@@ -54,6 +54,9 @@ jobs:
       - name: Run OWASP ZAP
         run: bash ./scripts/run-zap.ps1
 
+      - name: Deploy Public Juice Shop (Cloudflare Quick Tunnel)
+        run: bash ./scripts/deploy-public.ps1
+
       - name: Import Reports to DefectDojo
         if: always()
         env:
