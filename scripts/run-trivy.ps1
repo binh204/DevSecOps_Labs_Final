@@ -106,7 +106,7 @@ if [ -z "$DOCKER_GID" ]; then
 fi
 
 # Chạy dưới quyền user hiện tại và nhóm docker để đọc được docker.sock
-docker compose run --user "$(id -u):$DOCKER_GID" \
+docker compose run --pull missing --user "$(id -u):$DOCKER_GID" \
     -v "$(pwd)/reports/trivy-cache:/tmp/trivy-cache" \
     -e TRIVY_CACHE_DIR=/tmp/trivy-cache \
     --rm trivy-sbom
@@ -134,7 +134,7 @@ echo ""
 echo "Scanning SBOM..."
 
 # Chạy dưới quyền user hiện tại, mount thư mục cache và thiết lập biến môi trường TRIVY_CACHE_DIR
-docker compose run --user "$(id -u):$(id -g)" \
+docker compose run --pull missing --user "$(id -u):$(id -g)" \
     -v "$(pwd)/reports/trivy-cache:/tmp/trivy-cache" \
     -e TRIVY_CACHE_DIR=/tmp/trivy-cache \
     --rm trivy-sca

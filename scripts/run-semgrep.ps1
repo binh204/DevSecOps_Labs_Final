@@ -75,7 +75,7 @@ echo "========== SEMGREP =========="
 mkdir -p ./reports/semgrep
 
 # Chạy Semgrep dưới quyền của user hiện tại
-docker compose run --user "$(id -u):$(id -g)" --rm semgrep
+docker compose run --pull missing --user "$(id -u):$(id -g)" --rm semgrep
 if [ $? -ne 0 ]; then
     echo "Semgrep scan failed!" >&2
     exit 1

@@ -56,4 +56,8 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+# 5. Dọn dẹp các Docker Image cũ không còn sử dụng trên Target Server
+echo "Cleaning up old docker images on target server..."
+ssh -o StrictHostKeyChecking=no "$TARGET_USER@$TARGET_IP" "docker image prune -af --filter 'until=24h' || true"
+
 echo "Deploy completed successfully to target server."

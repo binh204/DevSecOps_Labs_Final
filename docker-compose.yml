@@ -9,6 +9,7 @@ services:
 
   semgrep:
     image: semgrep/semgrep:latest
+    pull_policy: missing
     container_name: semgrep
 
     working_dir: /src
@@ -28,6 +29,7 @@ services:
 
   trivy-sbom:
     image: aquasec/trivy:latest
+    pull_policy: missing
     container_name: trivy-sbom
 
     volumes:
@@ -44,6 +46,7 @@ services:
 
   trivy-sca:
     image: aquasec/trivy:latest
+    pull_policy: missing
     container_name: trivy-sca
 
     working_dir: /project
