@@ -36,6 +36,9 @@ if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
         if docker image inspect juice-shop:latest >/dev/null 2>&1; then
             echo "No source code changes detected in ./juice-shop since last commit."
             echo "Skipping docker build. Reusing existing local image 'juice-shop:latest'."
+            if [ -n "$GITHUB_RUN_NUMBER" ]; then
+                docker tag juice-shop:latest "juice-shop:v$GITHUB_RUN_NUMBER" 2>/dev/null || true
+            fi
             exit 0
         fi
     fi
