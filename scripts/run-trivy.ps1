@@ -133,11 +133,22 @@ echo "SBOM generated successfully."
 echo ""
 echo "Scanning SBOM..."
 
-# Chạy dưới quyền user hiện tại, mount thư mục cache và thiết lập biến môi trường TRIVY_CACHE_DIR
+# Chạy dưới quyền user hiện tại, mount thư mục cache và thiết lập các biến môi trường cho Trivy DB
 docker compose run --pull missing --user "$(id -u):$(id -g)" \
     -v "$(pwd)/reports/trivy-cache:/tmp/trivy-cache" \
     -e TRIVY_CACHE_DIR=/tmp/trivy-cache \
+    -e TRIVY_TIMEOUT=15m \
+    -e TRIVY_DB_REPOSITORY=ghcr.io/aquasec/trivy-db \
     --rm trivy-sca
+
+if [ $? -ne 0 ]; then
+    echo "Primary DB download failed or timed out. Retrying Trivy SCA scan with cached DB (--skip-db-update)..."
+    docker compose run --pull missing --user "$(id -u):$(id -g)" \
+        -v "$(pwd)/reports/trivy-cache:/tmp/trivy-cache" \
+        -e TRIVY_CACHE_DIR=/tmp/trivy-cache \
+        --rm trivy-sca --skip-db-update
+fi
+
 if [ $? -ne 0 ]; then
     echo "Trivy SCA scan failed!" >&2
     exit 1
