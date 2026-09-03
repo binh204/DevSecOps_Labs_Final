@@ -11,6 +11,7 @@ docker compose run -T --pull missing --rm zap \
     -t http://192.168.11.129:3000 \
     -P 8090 \
     -m 3 \
+    -d \
     -r report.html \
     -J report.json \
     -w report.md \
