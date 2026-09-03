@@ -11,6 +11,7 @@ docker compose run -T --pull missing --rm zap \
     -t http://192.168.11.129:3000 \
     -m 3 \
     -d \
+    -z "-config addons.autoUpdate.checkOnStart=false -config addons.autoUpdate.installOnStart=false" \
     -r report.html \
     -J report.json \
     -w report.md \
