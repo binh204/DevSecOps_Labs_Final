@@ -63,7 +63,6 @@ docker compose run -T --pull missing --user "$(id -u):$(id -g)" --rm zap \
     zap-baseline.py \
     -t http://192.168.11.129:3000 \
     -m 3 \
-    -v \
     -r report.html \
     -J report.json \
     -w report.md \
