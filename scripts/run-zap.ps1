@@ -24,13 +24,15 @@ docker run -d --name zap-daemon \
     -config api.disablekey=true \
     -config addons.autoUpdate.checkOnStart=false \
     -config addons.autoUpdate.installOnStart=false \
+    -config autoupdate.checkonstart=0 \
+    -config autoupdate.downloadnew=0 \
     -config database.recoverylog=false \
     -config database.newsession=1 \
     -config connection.timeoutInSecs=5
 
 echo "Waiting for ZAP Daemon to become ready..."
 RETRY=0
-MAX_RETRIES=40
+MAX_RETRIES=60
 until curl -s http://localhost:8090/JSON/core/view/version/ > /dev/null; do
     RETRY=$((RETRY+1))
     if [ $RETRY -ge $MAX_RETRIES ]; then
