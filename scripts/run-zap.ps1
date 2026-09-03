@@ -2,15 +2,16 @@
 echo ""
 echo "========== OWASP ZAP (REST API DAEMON SCAN) =========="
 
-# Tạo thư mục chứa báo cáo
+# Tạo thư mục chứa báo cáo và cấp quyền 777
 mkdir -p ./reports/zap
+chmod -R 777 ./reports/zap 2>/dev/null || true
 
 TARGET_URL="http://192.168.11.129:3000"
 
 # 1. Dọn dẹp container daemon cũ nếu có
 docker rm -f zap-daemon 2>/dev/null || true
 
-# 2. Khởi chạy ZAP Daemon Container trên port 8090 (tránh trùng port 8080 của DefectDojo)
+# 2. Khởi chạy ZAP Daemon Container trên port 8090 (Tối ưu khởi động siêu tốc 5-10s)
 echo "Starting OWASP ZAP Daemon container..."
 docker run -d --name zap-daemon \
     -p 8090:8090 \
@@ -21,11 +22,24 @@ docker run -d --name zap-daemon \
     -config api.addrs.addr.name=.* \
     -config api.addrs.addr.regex=true \
     -config api.disablekey=true \
-    -config addons.autoUpdate.checkOnStart=false
+    -config addons.autoUpdate.checkOnStart=false \
+    -config addons.autoUpdate.installOnStart=false \
+    -config database.recoverylog=false \
+    -config database.newsession=1 \
+    -config connection.timeoutInSecs=5
 
 echo "Waiting for ZAP Daemon to become ready..."
+RETRY=0
+MAX_RETRIES=40
 until curl -s http://localhost:8090/JSON/core/view/version/ > /dev/null; do
-    echo "ZAP is starting up..."
+    RETRY=$((RETRY+1))
+    if [ $RETRY -ge $MAX_RETRIES ]; then
+        echo "❌ ZAP Daemon failed to start within timeout! Container Logs:"
+        docker logs --tail 30 zap-daemon 2>/dev/null || true
+        docker rm -f zap-daemon 2>/dev/null || true
+        exit 1
+    fi
+    echo "ZAP is starting up (Attempt $RETRY/$MAX_RETRIES)..."
     sleep 2
 done
 echo "✅ ZAP Daemon is Ready!"
