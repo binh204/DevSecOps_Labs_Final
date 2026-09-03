@@ -33,7 +33,7 @@ docker run -d --name zap-daemon \
 echo "Waiting for ZAP Daemon to become ready..."
 RETRY=0
 MAX_RETRIES=60
-until curl -s http://localhost:8090/JSON/core/view/version/ > /dev/null; do
+until curl -s http://127.0.0.1:8090/JSON/core/view/version/ > /dev/null; do
     RETRY=$((RETRY+1))
     if [ $RETRY -ge $MAX_RETRIES ]; then
         echo "❌ ZAP Daemon failed to start within timeout! Container Logs:"
@@ -48,7 +48,7 @@ echo "✅ ZAP Daemon is Ready!"
 
 # 3. Kích hoạt Spider Scan
 echo "Starting ZAP Spider Scan on $TARGET_URL..."
-SPIDER_ID=$(curl -s "http://localhost:8090/JSON/spider/action/scan/?url=$TARGET_URL/&recurse=true" | grep -o '"scan":"[0-9]*"' | cut -d'"' -f4)
+SPIDER_ID=$(curl -s "http://127.0.0.1:8090/JSON/spider/action/scan/?url=$TARGET_URL/&recurse=true" | grep -o '"scan":"[0-9]*"' | cut -d'"' -f4)
 if [ -z "$SPIDER_ID" ]; then
     SPIDER_ID="0"
 fi
@@ -56,7 +56,7 @@ echo "Spider ID = $SPIDER_ID"
 
 echo "Waiting for Spider Scan to reach 100%..."
 while true; do
-    PROGRESS=$(curl -s "http://localhost:8090/JSON/spider/view/status/?scanId=$SPIDER_ID" | grep -o '"status":"[0-9]*"' | cut -d'"' -f4)
+    PROGRESS=$(curl -s "http://127.0.0.1:8090/JSON/spider/view/status/?scanId=$SPIDER_ID" | grep -o '"status":"[0-9]*"' | cut -d'"' -f4)
     if [ -z "$PROGRESS" ]; then
         PROGRESS="100"
     fi
@@ -70,9 +70,9 @@ echo "✅ Spider Complete!"
 
 # 4. Xuất Báo cáo XML / HTML / JSON cho DefectDojo
 echo "Exporting scan reports..."
-curl -s "http://localhost:8090/OTHER/core/other/xmlreport/" --output ./reports/zap/report.xml 2>/dev/null || true
-curl -s "http://localhost:8090/OTHER/core/other/htmlreport/" --output ./reports/zap/report.html 2>/dev/null || true
-curl -s "http://localhost:8090/OTHER/core/other/jsonreport/" --output ./reports/zap/report.json 2>/dev/null || true
+curl -s "http://127.0.0.1:8090/OTHER/core/other/xmlreport/" --output ./reports/zap/report.xml 2>/dev/null || true
+curl -s "http://127.0.0.1:8090/OTHER/core/other/htmlreport/" --output ./reports/zap/report.html 2>/dev/null || true
+curl -s "http://127.0.0.1:8090/OTHER/core/other/jsonreport/" --output ./reports/zap/report.json 2>/dev/null || true
 
 # 5. Dọn dẹp container ZAP Daemon
 echo "Cleaning up ZAP Daemon container..."
