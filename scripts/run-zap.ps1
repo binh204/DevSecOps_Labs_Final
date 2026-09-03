@@ -29,13 +29,14 @@ docker run -d --name zap-daemon \
 echo "Waiting for ZAP Daemon to become ready..."
 RETRY=0
 PRINT_COUNT=0
+MAX_RETRIES=90
 until curl -s http://127.0.0.1:8090/JSON/core/view/version/ > /dev/null || curl -s http://localhost:8090/JSON/core/view/version/ > /dev/null; do
     RETRY=$((RETRY+1))
     if [ $PRINT_COUNT -lt 5 ]; then
         PRINT_COUNT=$((PRINT_COUNT+1))
         echo "ZAP is starting up... ($PRINT_COUNT/5)"
     fi
-    if [ $RETRY -ge 40 ]; then
+    if [ $RETRY -ge $MAX_RETRIES ]; then
         echo "❌ ZAP Daemon failed to start within timeout!"
         docker logs --tail 30 zap-daemon 2>/dev/null || true
         docker rm -f zap-daemon 2>/dev/null || true
