@@ -59,8 +59,9 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# 4. Dọn dẹp các dangling layer rác
-echo "4. Cleaning up dangling images on target server..."
+# 4. Dọn dẹp các dangling layer và tag rác cũ
+echo "4. Cleaning up old image tags and dangling images on target server..."
+$SSH_CMD "docker images --format '{{.Repository}}:{{.Tag}}' | grep -E 'juice-shop:v|ghcr.io/binh204/juice-shop' | xargs -r docker rmi 2>/dev/null || true"
 $SSH_CMD "docker image prune -f 2>/dev/null || true"
 
 echo "Deploy completed successfully to target server."
