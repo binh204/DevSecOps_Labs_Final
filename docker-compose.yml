@@ -64,7 +64,7 @@ services:
       - /sbom/sbom.json
 
   zap:
-    image: zaproxy/zap-stable:latest
+    image: ghcr.io/zaproxy/zaproxy:stable 
     pull_policy: missing
     container_name: zap
     working_dir: /zap/wrk
