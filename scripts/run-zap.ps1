@@ -59,7 +59,7 @@ echo "========== OWASP ZAP =========="
 mkdir -p ./reports/zap
 
 # Chạy OWASP ZAP Baseline Scan hướng về máy ảo đích (192.168.11.129), xuất thêm XML (-x) cho DefectDojo
-docker compose run --pull missing --entrypoint /zap/zap-baseline.py --user "$(id -u):$(id -g)" --rm zap \
+docker compose run --pull missing --user "$(id -u):$(id -g)" --rm zap \
     -t http://192.168.11.129:3000 \
     -r report.html \
     -J report.json \
