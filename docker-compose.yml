@@ -64,9 +64,11 @@ services:
       - /sbom/sbom.json
 
   zap:
-    image: zaproxy/zap-stable:latest 
+    image: zaproxy/zap-stable:latest
     pull_policy: missing
     container_name: zap
+    healthcheck:
+      disable: true
     working_dir: /zap/wrk
     volumes:
       - ./reports/zap:/zap/wrk
