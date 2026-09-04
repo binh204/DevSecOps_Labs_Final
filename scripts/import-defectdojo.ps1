@@ -76,6 +76,7 @@ upload_scan() {
         -H "Authorization: Token $API_TOKEN" \
         -F "active=true" \
         -F "verified=true" \
+        -F "override_severities=true" \
         -F "scan_type=$scan_type" \
         -F "service=$service" \
         -F "engagement=$ENGAGEMENT_ID" \
@@ -85,6 +86,7 @@ upload_scan() {
         -H "Authorization: Token $API_TOKEN" \
         -F "active=true" \
         -F "verified=true" \
+        -F "override_severities=true" \
         -F "scan_type=$scan_type" \
         -F "engagement=$ENGAGEMENT_ID" \
         -F "file=@$file_path")

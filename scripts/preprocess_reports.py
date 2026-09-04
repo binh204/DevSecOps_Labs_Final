@@ -2,6 +2,7 @@ import json
 import sys
 import os
 import re
+import math
 
 CWE_CVSS_MAP = {}
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cwe_cvss_db.json')
@@ -24,6 +25,59 @@ def get_cvss(cwe_id):
     if not CWE_CVSS_MAP:
         load_db()
     return CWE_CVSS_MAP.get(cwe_id)
+
+def calculate_cvss3_score(vector_str):
+    """Calculates official FIRST.org / NVD CVSS v3.1 Base Score dynamically from vector string."""
+    if not vector_str or not vector_str.startswith("CVSS:3"):
+        return None
+    
+    metrics = {}
+    for part in vector_str.split('/'):
+        if ':' in part:
+            k, v = part.split(':', 1)
+            metrics[k] = v
+            
+    av_map = {'N': 0.85, 'A': 0.62, 'L': 0.55, 'P': 0.2}
+    ac_map = {'L': 0.77, 'H': 0.44}
+    pr_map_u = {'N': 0.85, 'L': 0.62, 'H': 0.27}
+    pr_map_c = {'N': 0.85, 'L': 0.68, 'H': 0.50}
+    ui_map = {'N': 0.85, 'R': 0.62}
+    c_map = {'H': 0.56, 'L': 0.22, 'N': 0.0}
+    i_map = {'H': 0.56, 'L': 0.22, 'N': 0.0}
+    a_map = {'H': 0.56, 'L': 0.22, 'N': 0.0}
+    
+    scope = metrics.get('S', 'U')
+    av = av_map.get(metrics.get('AV'), 0.85)
+    ac = ac_map.get(metrics.get('AC'), 0.77)
+    if scope == 'C':
+        pr = pr_map_c.get(metrics.get('PR'), 0.85)
+    else:
+        pr = pr_map_u.get(metrics.get('PR'), 0.85)
+    ui = ui_map.get(metrics.get('UI'), 0.85)
+    
+    c = c_map.get(metrics.get('C'), 0.0)
+    i = i_map.get(metrics.get('I'), 0.0)
+    a = a_map.get(metrics.get('A'), 0.0)
+    
+    iss = 1.0 - ((1.0 - c) * (1.0 - i) * (1.0 - a))
+    
+    if scope == 'C':
+        impact = 7.52 * (iss - 0.029) - 3.25 * ((iss - 0.029) ** 15)
+    else:
+        impact = 6.42 * iss
+        
+    if impact <= 0:
+        return 0.0
+        
+    exploitability = 8.22 * av * ac * pr * ui
+    
+    if scope == 'C':
+        base_score = min(1.08 * (impact + exploitability), 10.0)
+    else:
+        base_score = min(impact + exploitability, 10.0)
+        
+    rounded = math.ceil(round(base_score * 100000, 5) / 10000) / 10.0
+    return round(rounded, 1)
 
 def convert_semgrep(input_path, output_path):
     if not os.path.exists(input_path):
@@ -65,7 +119,8 @@ def convert_semgrep(input_path, output_path):
             cvss = get_cvss(cwe_val)
             if cvss:
                 finding["cvssv3"] = cvss["vector"]
-                finding["cvssv3_score"] = cvss["score"]
+                calc_score = calculate_cvss3_score(cvss["vector"])
+                finding["cvssv3_score"] = calc_score if calc_score is not None else cvss.get("score")
                 
         generic_findings.append(finding)
         
@@ -124,7 +179,8 @@ def convert_zap(input_path, output_path):
                 cvss = get_cvss(cwe_val)
                 if cvss:
                     finding["cvssv3"] = cvss["vector"]
-                    finding["cvssv3_score"] = cvss["score"]
+                    calc_score = calculate_cvss3_score(cvss["vector"])
+                    finding["cvssv3_score"] = calc_score if calc_score is not None else cvss.get("score")
                     
             generic_findings.append(finding)
             
