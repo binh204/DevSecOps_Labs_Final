@@ -143,7 +143,9 @@ def convert_semgrep(input_path, output_path):
                 
         generic_findings.append(finding)
         
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    out_dir = os.path.dirname(output_path)
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
     output_data = {
         "findings": generic_findings
     }
@@ -207,7 +209,9 @@ def convert_zap(input_path, output_path):
                     
             generic_findings.append(finding)
             
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    out_dir = os.path.dirname(output_path)
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
     output_data = {
         "findings": generic_findings
     }
