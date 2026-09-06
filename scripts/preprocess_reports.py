@@ -79,6 +79,21 @@ def calculate_cvss3_score(vector_str):
     rounded = math.ceil(round(base_score * 100000, 5) / 10000) / 10.0
     return round(rounded, 1)
 
+def score_to_severity(score):
+    """Maps CVSS score directly to standard DefectDojo Severity string."""
+    if score is None:
+        return None
+    if score >= 9.0:
+        return "Critical"
+    elif score >= 7.0:
+        return "High"
+    elif score >= 4.0:
+        return "Medium"
+    elif score > 0.0:
+        return "Low"
+    else:
+        return "Info"
+
 def convert_semgrep(input_path, output_path):
     if not os.path.exists(input_path):
         print(f"Error: Input file {input_path} not found.")
@@ -120,7 +135,11 @@ def convert_semgrep(input_path, output_path):
             if cvss:
                 finding["cvssv3"] = cvss["vector"]
                 calc_score = calculate_cvss3_score(cvss["vector"])
-                finding["cvssv3_score"] = calc_score if calc_score is not None else cvss.get("score")
+                final_score = calc_score if calc_score is not None else cvss.get("score")
+                finding["cvssv3_score"] = final_score
+                dyn_sev = score_to_severity(final_score)
+                if dyn_sev:
+                    finding["severity"] = dyn_sev
                 
         generic_findings.append(finding)
         
@@ -180,7 +199,11 @@ def convert_zap(input_path, output_path):
                 if cvss:
                     finding["cvssv3"] = cvss["vector"]
                     calc_score = calculate_cvss3_score(cvss["vector"])
-                    finding["cvssv3_score"] = calc_score if calc_score is not None else cvss.get("score")
+                    final_score = calc_score if calc_score is not None else cvss.get("score")
+                    finding["cvssv3_score"] = final_score
+                    dyn_sev = score_to_severity(final_score)
+                    if dyn_sev:
+                        finding["severity"] = dyn_sev
                     
             generic_findings.append(finding)
             
