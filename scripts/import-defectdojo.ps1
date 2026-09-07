@@ -64,38 +64,38 @@ upload_scan() {
   local scan_type="$1"
   local file_path="$2"
   local service="$3"
-  local test_title="$4"
   
   if [ -f "$file_path" ]; then
-    echo "Uploading $scan_type ($service - $test_title) report from $file_path..."
+    echo "Uploading $scan_type ($service) report from $file_path..."
     
     # Tạo file tạm để lưu response body từ DefectDojo
     local response_file=$(mktemp)
     
-    local curl_cmd=(
-      curl -s -o "$response_file" -w "%{http_code}" -X POST "$DEFECTDOJO_URL/api/v2/import-scan/"
-      -H "Authorization: Token $API_TOKEN"
-      -F "active=true"
-      -F "verified=true"
-      -F "override_severities=true"
-      -F "scan_type=$scan_type"
-      -F "engagement=$ENGAGEMENT_ID"
-      -F "file=@$file_path"
-    )
-    
     if [ -n "$service" ]; then
-      curl_cmd+=(-F "service=$service")
+      local http_code=$(curl -s -o "$response_file" -w "%{http_code}" -X POST "$DEFECTDOJO_URL/api/v2/import-scan/" \
+        -H "Authorization: Token $API_TOKEN" \
+        -F "active=true" \
+        -F "verified=true" \
+        -F "override_severities=true" \
+        -F "scan_type=$scan_type" \
+        -F "service=$service" \
+        -F "engagement=$ENGAGEMENT_ID" \
+        -F "file=@$file_path")
+    else
+      local http_code=$(curl -s -o "$response_file" -w "%{http_code}" -X POST "$DEFECTDOJO_URL/api/v2/import-scan/" \
+        -H "Authorization: Token $API_TOKEN" \
+        -F "active=true" \
+        -F "verified=true" \
+        -F "override_severities=true" \
+        -F "scan_type=$scan_type" \
+        -F "engagement=$ENGAGEMENT_ID" \
+        -F "file=@$file_path")
     fi
-    if [ -n "$test_title" ]; then
-      curl_cmd+=(-F "test_title=$test_title")
-    fi
-    
-    local http_code=$("${curl_cmd[@]}")
     
     if [ "$http_code" -eq 201 ] || [ "$http_code" -eq 200 ]; then
-      echo "Successfully uploaded $scan_type ($service - $test_title)."
+      echo "Successfully uploaded $scan_type ($service)."
     else
-      echo "Failed to upload $scan_type ($service - $test_title). Status code: $http_code" >&2
+      echo "Failed to upload $scan_type ($service). Status code: $http_code" >&2
       echo "Error Response: $(cat "$response_file")" >&2
     fi
     
@@ -111,8 +111,8 @@ python3 ./scripts/preprocess_reports.py semgrep "/home/soc_server/reports/semgre
 python3 ./scripts/preprocess_reports.py zap "/home/soc_server/reports/zap/report.json" "/home/soc_server/reports/zap/report-generic.json"
 
 # 3. Upload các báo cáo
-upload_scan "Generic Findings Import" "/home/soc_server/reports/semgrep/report-generic.json" "Juice Shop Source Code" "Semgrep SAST Scan"
-upload_scan "Trivy Scan" "/home/soc_server/reports/trivy/report.json" "Juice Shop Container" "Trivy Vulnerability Scan"
-upload_scan "Generic Findings Import" "/home/soc_server/reports/zap/report-generic.json" "Juice Shop Web Application" "OWASP ZAP DAST Scan"
+upload_scan "Semgrep Scan" "/home/soc_server/reports/semgrep/report-generic.json" "Juice Shop Source Code"
+upload_scan "Trivy Scan" "/home/soc_server/reports/trivy/report.json" "Juice Shop Container"
+upload_scan "ZAP Scan" "/home/soc_server/reports/zap/report-generic.json" "Juice Shop Web Application"
 
 echo "Upload reports process completed."
