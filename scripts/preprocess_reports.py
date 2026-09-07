@@ -142,7 +142,7 @@ def convert_semgrep(input_path, output_path):
             "severity": severity,
             "file_path": result.get('path'),
             "line": result.get('start', {}).get('line', 1),
-            "found_by": ["Semgrep"]
+            "found_by": ["Semgrep", "Semgrep JSON Report", "Semgrep Scan"]
         }
         
         enrich_finding_with_cvss(finding, cwe_val)
@@ -198,7 +198,7 @@ def convert_zap(input_path, output_path):
                 "title": alert.get('alert', 'ZAP Finding')[:120],
                 "description": description,
                 "severity": severity,
-                "found_by": ["OWASP ZAP"]
+                "found_by": ["OWASP ZAP", "ZAP Scan"]
             }
             
             enrich_finding_with_cvss(finding, cwe_val)

@@ -79,6 +79,7 @@ upload_scan() {
         -F "override_severities=true" \
         -F "scan_type=$scan_type" \
         -F "service=$service" \
+        -F "test_title=$service" \
         -F "engagement=$ENGAGEMENT_ID" \
         -F "file=@$file_path")
     else
@@ -111,8 +112,8 @@ python3 ./scripts/preprocess_reports.py semgrep "/home/soc_server/reports/semgre
 python3 ./scripts/preprocess_reports.py zap "/home/soc_server/reports/zap/report.json" "/home/soc_server/reports/zap/report-generic.json"
 
 # 3. Upload các báo cáo
-upload_scan "Semgrep Scan" "/home/soc_server/reports/semgrep/report-generic.json" "Juice Shop Source Code"
-upload_scan "Trivy Scan" "/home/soc_server/reports/trivy/report.json" "Juice Shop Container"
-upload_scan "ZAP Scan" "/home/soc_server/reports/zap/report-generic.json" "Juice Shop Web Application"
+upload_scan "Generic Findings Import" "/home/soc_server/reports/semgrep/report-generic.json" "Semgrep"
+upload_scan "Trivy Scan" "/home/soc_server/reports/trivy/report.json" "Trivy"
+upload_scan "Generic Findings Import" "/home/soc_server/reports/zap/report-generic.json" "OWASP ZAP"
 
 echo "Upload reports process completed."
