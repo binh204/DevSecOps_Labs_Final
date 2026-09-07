@@ -111,9 +111,8 @@ python3 ./scripts/preprocess_reports.py semgrep "/home/soc_server/reports/semgre
 python3 ./scripts/preprocess_reports.py zap "/home/soc_server/reports/zap/report.json" "/home/soc_server/reports/zap/report-generic.json"
 
 # 3. Upload các báo cáo
-upload_scan "Generic Findings Import" "/home/soc_server/reports/semgrep/report-generic.json" "Semgrep"
-upload_scan "Trivy Scan" "/home/soc_server/reports/trivy/report.json"
-# upload_scan "Checkov Scan" "/home/soc_server/reports/checkov/report.json/results_json.json"
-upload_scan "Generic Findings Import" "/home/soc_server/reports/zap/report-generic.json" "OWASP ZAP"
+upload_scan "Generic Findings Import" "/home/soc_server/reports/semgrep/report-generic.json" "Juice Shop Source Code"
+upload_scan "Trivy Scan" "/home/soc_server/reports/trivy/report.json" "Juice Shop Container"
+upload_scan "Generic Findings Import" "/home/soc_server/reports/zap/report-generic.json" "Juice Shop Web Application"
 
 echo "Upload reports process completed."
