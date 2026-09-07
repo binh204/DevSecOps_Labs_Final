@@ -94,6 +94,21 @@ def score_to_severity(score):
     else:
         return "Info"
 
+def enrich_finding_with_cvss(finding, cwe_val):
+    """Enriches a finding dictionary with CWE, CVSS v3.1 vector, score, and synced severity."""
+    if not cwe_val:
+        return
+    finding["cwe"] = cwe_val
+    cvss = get_cvss(cwe_val)
+    if cvss:
+        finding["cvssv3"] = cvss["vector"]
+        calc_score = calculate_cvss3_score(cvss["vector"])
+        final_score = calc_score if calc_score is not None else cvss.get("score")
+        finding["cvssv3_score"] = final_score
+        dyn_sev = score_to_severity(final_score)
+        if dyn_sev:
+            finding["severity"] = dyn_sev
+
 def convert_semgrep(input_path, output_path):
     if not os.path.exists(input_path):
         print(f"Error: Input file {input_path} not found.")
@@ -129,18 +144,7 @@ def convert_semgrep(input_path, output_path):
             "line": result.get('start', {}).get('line', 1)
         }
         
-        if cwe_val:
-            finding["cwe"] = cwe_val
-            cvss = get_cvss(cwe_val)
-            if cvss:
-                finding["cvssv3"] = cvss["vector"]
-                calc_score = calculate_cvss3_score(cvss["vector"])
-                final_score = calc_score if calc_score is not None else cvss.get("score")
-                finding["cvssv3_score"] = final_score
-                dyn_sev = score_to_severity(final_score)
-                if dyn_sev:
-                    finding["severity"] = dyn_sev
-                
+        enrich_finding_with_cvss(finding, cwe_val)
         generic_findings.append(finding)
         
     out_dir = os.path.dirname(output_path)
@@ -195,18 +199,7 @@ def convert_zap(input_path, output_path):
                 "severity": severity
             }
             
-            if cwe_val:
-                finding["cwe"] = cwe_val
-                cvss = get_cvss(cwe_val)
-                if cvss:
-                    finding["cvssv3"] = cvss["vector"]
-                    calc_score = calculate_cvss3_score(cvss["vector"])
-                    final_score = calc_score if calc_score is not None else cvss.get("score")
-                    finding["cvssv3_score"] = final_score
-                    dyn_sev = score_to_severity(final_score)
-                    if dyn_sev:
-                        finding["severity"] = dyn_sev
-                    
+            enrich_finding_with_cvss(finding, cwe_val)
             generic_findings.append(finding)
             
     out_dir = os.path.dirname(output_path)
