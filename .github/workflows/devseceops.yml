@@ -37,16 +37,14 @@ jobs:
       - name: Run Trivy (SCA)
         run: bash ./scripts/run-trivy.ps1
 
-      - name: Push image to GHCR
+      - name: Push image to GHCR (Staging Candidate)
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
           echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
           
           docker tag juice-shop:latest ghcr.io/binh204/juice-shop:sha-$SHORT_SHA
-          docker tag juice-shop:latest ghcr.io/binh204/juice-shop:latest
           docker push ghcr.io/binh204/juice-shop:sha-$SHORT_SHA
-          docker push ghcr.io/binh204/juice-shop:latest
 
       - name: Deploy Juice Shop (Staging)
         env:
@@ -65,8 +63,8 @@ jobs:
         if: success()
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          docker tag ghcr.io/binh204/juice-shop:sha-${{ env.SHORT_SHA }} ghcr.io/binh204/juice-shop:prod-latest
-          docker push ghcr.io/binh204/juice-shop:prod-latest
+          docker tag ghcr.io/binh204/juice-shop:sha-${{ env.SHORT_SHA }} ghcr.io/binh204/juice-shop:latest
+          docker push ghcr.io/binh204/juice-shop:latest
 
       - name: Deploy Juice Shop (Production)
         run: bash ./scripts/deploy-public.ps1
