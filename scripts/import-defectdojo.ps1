@@ -79,7 +79,6 @@ upload_scan() {
         -F "override_severities=true" \
         -F "scan_type=$scan_type" \
         -F "service=$service" \
-        -F "test_title=$service" \
         -F "engagement=$ENGAGEMENT_ID" \
         -F "file=@$file_path")
     else
