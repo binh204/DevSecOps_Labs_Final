@@ -59,6 +59,13 @@ jobs:
       - name: Run OWASP ZAP (DAST)
         run: bash ./scripts/run-zap.ps1
 
+      - name: Import Reports to DefectDojo
+        if: always()
+        env:
+          API_TOKEN: ${{ secrets.DEFECTDOJO_API_KEY }}
+          RUN_NUMBER: ${{ github.run_number }}
+        run: bash ./scripts/import-defectdojo.ps1
+
       - name: Promote Image to Production Tag
         if: success()
         run: |
@@ -69,12 +76,7 @@ jobs:
       - name: Deploy Juice Shop (Production)
         run: bash ./scripts/deploy-public.ps1
 
-      - name: Import Reports to DefectDojo
-        if: always()
-        env:
-          API_TOKEN: ${{ secrets.DEFECTDOJO_API_KEY }}
-          RUN_NUMBER: ${{ github.run_number }}
-        run: bash ./scripts/import-defectdojo.ps1
+      
         
       # - name: Upload Reports
       #   if: always()

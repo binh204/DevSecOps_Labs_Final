@@ -141,8 +141,7 @@ def convert_semgrep(input_path, output_path):
             "description": result.get('extra', {}).get('message', ''),
             "severity": severity,
             "file_path": result.get('path'),
-            "line": result.get('start', {}).get('line', 1),
-            "found_by": ["Semgrep"]
+            "line": result.get('start', {}).get('line', 1)
         }
         
         enrich_finding_with_cvss(finding, cwe_val)
@@ -197,8 +196,7 @@ def convert_zap(input_path, output_path):
             finding = {
                 "title": alert.get('alert', 'ZAP Finding')[:120],
                 "description": description,
-                "severity": severity,
-                "found_by": ["OWASP ZAP"]
+                "severity": severity
             }
             
             enrich_finding_with_cvss(finding, cwe_val)
