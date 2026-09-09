@@ -38,34 +38,39 @@ def main():
         print(f"Error querying DefectDojo Engagement: {e}", file=sys.stderr)
         sys.exit(1)
 
-    # Step 2: Query findings for this Engagement
-    findings_url = f"{defectdojo_url}/api/v2/findings/?test__engagement={engagement_id}&active=true"
-    req_f = urllib.request.Request(findings_url)
-    req_f.add_header("Authorization", f"Token {api_token}")
-    req_f.add_header("Accept", "application/json")
-
+    # Step 2: Query ALL findings for this Engagement (with pagination support)
     critical_count = 0
     high_count = 0
     medium_count = 0
     low_count = 0
     info_count = 0
 
+    current_url = f"{defectdojo_url}/api/v2/findings/?test__engagement={engagement_id}&active=true&limit=100"
+
     try:
-        with urllib.request.urlopen(req_f) as resp:
-            data = json.loads(resp.read().decode('utf-8'))
-            findings = data.get("results", [])
-            for f in findings:
-                sev = (f.get("severity") or "").capitalize()
-                if sev == "Critical":
-                    critical_count += 1
-                elif sev == "High":
-                    high_count += 1
-                elif sev == "Medium":
-                    medium_count += 1
-                elif sev == "Low":
-                    low_count += 1
-                else:
-                    info_count += 1
+        while current_url:
+            req_f = urllib.request.Request(current_url)
+            req_f.add_header("Authorization", f"Token {api_token}")
+            req_f.add_header("Accept", "application/json")
+
+            with urllib.request.urlopen(req_f) as resp:
+                data = json.loads(resp.read().decode('utf-8'))
+                findings = data.get("results", [])
+                for f in findings:
+                    sev = (f.get("severity") or "").capitalize()
+                    if sev == "Critical":
+                        critical_count += 1
+                    elif sev == "High":
+                        high_count += 1
+                    elif sev == "Medium":
+                        medium_count += 1
+                    elif sev == "Low":
+                        low_count += 1
+                    else:
+                        info_count += 1
+                
+                # Update current_url to the next page URL if available
+                current_url = data.get("next")
     except Exception as e:
         print(f"Error querying DefectDojo Findings: {e}", file=sys.stderr)
         sys.exit(1)
