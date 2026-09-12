@@ -66,11 +66,13 @@ jobs:
           RUN_NUMBER: ${{ github.run_number }}
         run: bash ./scripts/import-defectdojo.ps1
 
-      - name: Check Security Quality Gate
-        env:
-          API_TOKEN: ${{ secrets.DEFECTDOJO_API_KEY }}
-          RUN_NUMBER: ${{ github.run_number }}
-        run: python3 ./scripts/check_quality_gate.py
+      - name: Check Security Quality Gate (DefectDojo)
+        uses: mtesauro/check-defectdojo-engagement-action@v1
+        with:
+          defectdojo_url: 'http://192.168.11.130:8080'
+          api_key: ${{ secrets.DEFECTDOJO_API_KEY }}
+          engagement_name: 'CI/CD Build #${{ github.run_number }}'
+          critical_threshold: 0
 
       - name: Promote Image to Production Tag
         if: success()
