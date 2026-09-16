@@ -148,8 +148,7 @@ def convert_semgrep(input_path, output_path):
             "severity": severity,
             "file_path": path,
             "line": line,
-            "unique_id_from_tool": unique_key,
-            "hash_code": hashlib.md5(unique_key.encode('utf-8')).hexdigest()
+            "unique_id_from_tool": unique_key
         }
         
         enrich_finding_with_cvss(finding, cwe_val)
@@ -203,15 +202,13 @@ def convert_zap(input_path, output_path):
             
             plugin_id = alert.get('pluginId') or alert.get('pluginid') or alert.get('alert', 'zap')
             alert_title = alert.get('alert', 'ZAP Finding')[:120]
-            unique_key = f"zap:{plugin_id}:{cwe_val}:{alert_title}"
             
             finding = {
                 "title": alert_title,
                 "description": description,
                 "severity": severity,
                 "file_path": "http://192.168.11.129:3000",
-                "unique_id_from_tool": f"zap:{plugin_id}",
-                "hash_code": hashlib.md5(unique_key.encode('utf-8')).hexdigest()
+                "unique_id_from_tool": f"zap:{plugin_id}"
             }
             
             enrich_finding_with_cvss(finding, cwe_val)

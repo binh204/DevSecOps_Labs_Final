@@ -61,6 +61,7 @@ upload_scan() {
         -F "close_old_unsourced=true" \
         -F "product_name=Juice Shop" \
         -F "engagement_name=$ENGAGEMENT_NAME" \
+        -F "test_title=$service" \
         -F "scan_type=$scan_type" \
         -F "service=$service" \
         -F "file=@$file_path")
