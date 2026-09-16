@@ -3,6 +3,7 @@ import sys
 import os
 import re
 import math
+import hashlib
 
 CWE_CVSS_MAP = {}
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cwe_cvss_db.json')
@@ -136,13 +137,19 @@ def convert_semgrep(input_path, output_path):
             if match:
                 cwe_val = int(match.group(1))
                 
+        check_id = result.get('check_id', 'semgrep')
+        path = result.get('path', '')
+        line = result.get('start', {}).get('line', 1)
+        unique_key = f"semgrep:{check_id}:{path}:{line}"
+        
         finding = {
             "title": result.get('extra', {}).get('message', 'Semgrep Finding').split('\n')[0][:120],
             "description": result.get('extra', {}).get('message', ''),
             "severity": severity,
-            "file_path": result.get('path'),
-            "line": result.get('start', {}).get('line', 1),
-            "unique_id_from_tool": f"{result.get('check_id')}:{result.get('path')}:{result.get('start', {}).get('line', 1)}"
+            "file_path": path,
+            "line": line,
+            "unique_id_from_tool": unique_key,
+            "hash_code": hashlib.md5(unique_key.encode('utf-8')).hexdigest()
         }
         
         enrich_finding_with_cvss(finding, cwe_val)
@@ -195,12 +202,16 @@ def convert_zap(input_path, output_path):
             description = f"{alert.get('desc', '')}\n\n**Solution:**\n{alert.get('solution', '')}\n\n**Instances:**\n{instances_desc}"
             
             plugin_id = alert.get('pluginId') or alert.get('pluginid') or alert.get('alert', 'zap')
+            alert_title = alert.get('alert', 'ZAP Finding')[:120]
+            unique_key = f"zap:{plugin_id}:{cwe_val}:{alert_title}"
+            
             finding = {
-                "title": alert.get('alert', 'ZAP Finding')[:120],
+                "title": alert_title,
                 "description": description,
                 "severity": severity,
                 "file_path": "http://192.168.11.129:3000",
-                "unique_id_from_tool": f"zap:{plugin_id}"
+                "unique_id_from_tool": f"zap:{plugin_id}",
+                "hash_code": hashlib.md5(unique_key.encode('utf-8')).hexdigest()
             }
             
             enrich_finding_with_cvss(finding, cwe_val)
