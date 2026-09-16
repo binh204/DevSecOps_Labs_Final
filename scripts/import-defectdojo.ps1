@@ -77,6 +77,7 @@ upload_scan() {
         -F "active=true" \
         -F "verified=true" \
         -F "override_severities=true" \
+        -F "close_old_unsourced=true" \
         -F "scan_type=$scan_type" \
         -F "service=$service" \
         -F "engagement=$ENGAGEMENT_ID" \
@@ -87,6 +88,7 @@ upload_scan() {
         -F "active=true" \
         -F "verified=true" \
         -F "override_severities=true" \
+        -F "close_old_unsourced=true" \
         -F "scan_type=$scan_type" \
         -F "engagement=$ENGAGEMENT_ID" \
         -F "file=@$file_path")
