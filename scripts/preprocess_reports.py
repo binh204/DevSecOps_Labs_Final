@@ -194,11 +194,12 @@ def convert_zap(input_path, output_path):
                 
             description = f"{alert.get('desc', '')}\n\n**Solution:**\n{alert.get('solution', '')}\n\n**Instances:**\n{instances_desc}"
             
-            plugin_id = alert.get('pluginid', alert.get('alert', 'zap'))
+            plugin_id = alert.get('pluginId') or alert.get('pluginid') or alert.get('alert', 'zap')
             finding = {
                 "title": alert.get('alert', 'ZAP Finding')[:120],
                 "description": description,
                 "severity": severity,
+                "file_path": "http://192.168.11.129:3000",
                 "unique_id_from_tool": f"zap:{plugin_id}"
             }
             
