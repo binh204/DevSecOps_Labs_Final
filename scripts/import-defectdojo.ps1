@@ -58,10 +58,9 @@ upload_scan() {
         -F "verified=true" \
         -F "override_severities=true" \
         -F "auto_create_context=true" \
-        -F "close_old_unsourced=true" \
+        -F "close_old_unsourced=false" \
         -F "product_name=Juice Shop" \
         -F "engagement_name=$ENGAGEMENT_NAME" \
-        -F "test_title=$service" \
         -F "scan_type=$scan_type" \
         -F "service=$service" \
         -F "file=@$file_path")
@@ -72,7 +71,7 @@ upload_scan() {
         -F "verified=true" \
         -F "override_severities=true" \
         -F "auto_create_context=true" \
-        -F "close_old_unsourced=true" \
+        -F "close_old_unsourced=false" \
         -F "product_name=Juice Shop" \
         -F "engagement_name=$ENGAGEMENT_NAME" \
         -F "scan_type=$scan_type" \
