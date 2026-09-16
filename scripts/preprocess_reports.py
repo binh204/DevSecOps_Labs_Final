@@ -194,11 +194,7 @@ def convert_zap(input_path, output_path):
                 except ValueError:
                     pass
             
-            instances_desc = ""
-            for inst in alert.get('instances', []):
-                instances_desc += f"- **URI:** {inst.get('uri')}\n  **Method:** {inst.get('method')}\n  **Param:** {inst.get('param')}\n  **Evidence:** {inst.get('evidence')}\n"
-                
-            description = f"{alert.get('desc', '')}\n\n**Solution:**\n{alert.get('solution', '')}\n\n**Instances:**\n{instances_desc}"
+            description = f"{alert.get('desc', '')}\n\n**Solution:**\n{alert.get('solution', '')}"
             
             plugin_id = alert.get('pluginId') or alert.get('pluginid') or alert.get('alert', 'zap')
             alert_title = alert.get('alert', 'ZAP Finding')[:120]
