@@ -16,10 +16,10 @@ def main():
         sys.exit(1)
 
     print("========== DEFECTDOJO SECURITY QUALITY GATE ==========")
-    print(f"Checking findings for Engagement: 'CI/CD Build #{run_number}'...")
+    engagement_name = os.environ.get("ENGAGEMENT_NAME", "CI/CD Pipeline Scan")
+    print(f"Checking findings for Engagement: '{engagement_name}'...")
 
     # Step 1: Find Engagement ID by name
-    engagement_name = f"CI/CD Build #{run_number}"
     req_url = f"{defectdojo_url}/api/v2/engagements/?name={urllib.parse.quote(engagement_name)}"
     
     req = urllib.request.Request(req_url)
@@ -31,8 +31,19 @@ def main():
             data = json.loads(resp.read().decode('utf-8'))
             results = data.get("results", [])
             if not results:
-                print(f"Warning: Engagement '{engagement_name}' not found on DefectDojo. Passing by default.")
-                sys.exit(0)
+                # Fallback to CI/CD Build #<run_number>
+                fallback_name = f"CI/CD Build #{run_number}"
+                fallback_url = f"{defectdojo_url}/api/v2/engagements/?name={urllib.parse.quote(fallback_name)}"
+                req_fb = urllib.request.Request(fallback_url)
+                req_fb.add_header("Authorization", f"Token {api_token}")
+                req_fb.add_header("Accept", "application/json")
+                with urllib.request.urlopen(req_fb) as resp_fb:
+                    data_fb = json.loads(resp_fb.read().decode('utf-8'))
+                    results_fb = data_fb.get("results", [])
+                    if not results_fb:
+                        print(f"Warning: Engagement '{engagement_name}' or '{fallback_name}' not found on DefectDojo. Passing by default.")
+                        sys.exit(0)
+                    results = results_fb
             engagement_id = results[0]["id"]
     except Exception as e:
         print(f"Error querying DefectDojo Engagement: {e}", file=sys.stderr)

@@ -35,69 +35,53 @@ else
   echo "Found Product 'Juice Shop' with ID: $PRODUCT_ID"
 fi
 
-# 2. Tạo Engagement mới cho lần chạy pipeline này
+# 2. Định danh Engagement duy nhất cho CI/CD Pipeline
+ENGAGEMENT_NAME="CI/CD Pipeline Scan"
 START_DATE=$(date +%Y-%m-%d)
 END_DATE=$(date -d "+1 day" +%Y-%m-%d 2>/dev/null || date -v+1d +%Y-%m-%d 2>/dev/null || echo "$START_DATE")
-ENGAGEMENT_NAME="CI/CD Build #$RUN_NUMBER"
 
-echo "Creating new Engagement: $ENGAGEMENT_NAME..."
-ENGAGEMENT_ID=$(curl -s -X POST "$DEFECTDOJO_URL/api/v2/engagements/" \
-  -H "Authorization: Token $API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d "{
-    \"name\": \"$ENGAGEMENT_NAME\",
-    \"product\": $PRODUCT_ID,
-    \"target_start\": \"$START_DATE\",
-    \"target_end\": \"$END_DATE\",
-    \"status\": \"In Progress\",
-    \"engagement_type\": \"CI/CD\"
-  }" | python3 -c "import sys, json; print(json.load(sys.stdin).get('id', 'null'))")
-
-if [ "$ENGAGEMENT_ID" == "null" ] || [ -z "$ENGAGEMENT_ID" ]; then
-  echo "ERROR: Failed to create Engagement in DefectDojo!" >&2
-  exit 1
-fi
-echo "Created Engagement with ID: $ENGAGEMENT_ID"
-
-# Hàm helper để upload báo cáo
+# Hàm helper để upload / reimport báo cáo
 upload_scan() {
   local scan_type="$1"
   local file_path="$2"
   local service="$3"
   
   if [ -f "$file_path" ]; then
-    echo "Uploading $scan_type ($service) report from $file_path..."
+    echo "Reimporting $scan_type ($service) report from $file_path..."
     
-    # Tạo file tạm để lưu response body từ DefectDojo
     local response_file=$(mktemp)
     
     if [ -n "$service" ]; then
-      local http_code=$(curl -s -o "$response_file" -w "%{http_code}" -X POST "$DEFECTDOJO_URL/api/v2/import-scan/" \
+      local http_code=$(curl -s -o "$response_file" -w "%{http_code}" -X POST "$DEFECTDOJO_URL/api/v2/reimport-scan/" \
         -H "Authorization: Token $API_TOKEN" \
         -F "active=true" \
         -F "verified=true" \
         -F "override_severities=true" \
+        -F "auto_create_context=true" \
         -F "close_old_unsourced=true" \
+        -F "product_name=Juice Shop" \
+        -F "engagement_name=$ENGAGEMENT_NAME" \
         -F "scan_type=$scan_type" \
         -F "service=$service" \
-        -F "engagement=$ENGAGEMENT_ID" \
         -F "file=@$file_path")
     else
-      local http_code=$(curl -s -o "$response_file" -w "%{http_code}" -X POST "$DEFECTDOJO_URL/api/v2/import-scan/" \
+      local http_code=$(curl -s -o "$response_file" -w "%{http_code}" -X POST "$DEFECTDOJO_URL/api/v2/reimport-scan/" \
         -H "Authorization: Token $API_TOKEN" \
         -F "active=true" \
         -F "verified=true" \
         -F "override_severities=true" \
+        -F "auto_create_context=true" \
         -F "close_old_unsourced=true" \
+        -F "product_name=Juice Shop" \
+        -F "engagement_name=$ENGAGEMENT_NAME" \
         -F "scan_type=$scan_type" \
-        -F "engagement=$ENGAGEMENT_ID" \
         -F "file=@$file_path")
     fi
     
     if [ "$http_code" -eq 201 ] || [ "$http_code" -eq 200 ]; then
-      echo "Successfully uploaded $scan_type ($service)."
+      echo "Successfully reimported $scan_type ($service)."
     else
-      echo "Failed to upload $scan_type ($service). Status code: $http_code" >&2
+      echo "Failed to reimport $scan_type ($service). Status code: $http_code" >&2
       echo "Error Response: $(cat "$response_file")" >&2
     fi
     

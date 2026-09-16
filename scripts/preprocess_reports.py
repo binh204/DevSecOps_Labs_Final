@@ -141,7 +141,8 @@ def convert_semgrep(input_path, output_path):
             "description": result.get('extra', {}).get('message', ''),
             "severity": severity,
             "file_path": result.get('path'),
-            "line": result.get('start', {}).get('line', 1)
+            "line": result.get('start', {}).get('line', 1),
+            "unique_id_from_tool": f"{result.get('check_id')}:{result.get('path')}:{result.get('start', {}).get('line', 1)}"
         }
         
         enrich_finding_with_cvss(finding, cwe_val)
@@ -193,10 +194,12 @@ def convert_zap(input_path, output_path):
                 
             description = f"{alert.get('desc', '')}\n\n**Solution:**\n{alert.get('solution', '')}\n\n**Instances:**\n{instances_desc}"
             
+            plugin_id = alert.get('pluginid', alert.get('alert', 'zap'))
             finding = {
                 "title": alert.get('alert', 'ZAP Finding')[:120],
                 "description": description,
-                "severity": severity
+                "severity": severity,
+                "unique_id_from_tool": f"zap:{plugin_id}"
             }
             
             enrich_finding_with_cvss(finding, cwe_val)
