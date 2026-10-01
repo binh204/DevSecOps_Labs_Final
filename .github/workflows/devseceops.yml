@@ -5,10 +5,10 @@ on:
     branches:
       - main
     paths:
-      - 'juice-shop/**'
-      - '.github/workflows/**'
-      - 'scripts/**'
-      - 'docker-compose.yml'
+      - "juice-shop/**"
+      - ".github/workflows/**"
+      - "scripts/**"
+      - "docker-compose.yml"
   workflow_dispatch:
 
 permissions:
@@ -31,8 +31,8 @@ jobs:
       - name: Run Semgrep (SAST)
         run: bash ./scripts/run-semgrep.ps1
 
-      - name: Build Image
-        run: bash ./scripts/build-image.ps1
+      # - name: Build Image
+      #   run: bash ./scripts/build-image.ps1
 
       - name: Run Trivy (SCA)
         run: bash ./scripts/run-trivy.ps1
@@ -42,7 +42,7 @@ jobs:
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
           echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
-          
+
           docker tag juice-shop:latest ghcr.io/binh204/juice-shop:sha-$SHORT_SHA
           docker push ghcr.io/binh204/juice-shop:sha-$SHORT_SHA
 
@@ -82,8 +82,6 @@ jobs:
       - name: Deploy Juice Shop (Production)
         run: bash ./scripts/deploy-public.ps1
 
-      
-        
       # - name: Upload Reports
       #   if: always()
       #   uses: actions/upload-artifact@v4
