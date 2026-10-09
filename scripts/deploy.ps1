@@ -37,9 +37,9 @@ fi
 echo "3. Removing old juice-shop container..."
 $SSH_CMD "docker rm -f juice-shop 2>/dev/null || true"
 
-# 4. Khởi chạy container mới từ Image vừa pull về từ GHCR
-echo "4. Starting new juice-shop container..."
-$SSH_CMD "docker run -d --name juice-shop -p 3000:3000 --restart always $IMAGE_NAME"
+# 4. Khởi chạy container mới từ Image vừa pull về từ GHCR (ở chế độ unsafe)
+echo "4. Starting new juice-shop container in unsafe mode..."
+$SSH_CMD "docker run -d --name juice-shop -e NODE_ENV=unsafe -p 3000:3000 --restart always $IMAGE_NAME"
 if [ $? -ne 0 ]; then
     echo "ERROR: Docker run on target server failed!" >&2
     exit 1

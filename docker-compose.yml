@@ -4,6 +4,8 @@ services:
     build:
       context: ./juice-shop
     container_name: juice-shop
+    environment:
+      - NODE_ENV=unsafe
     ports:
       - "3000:3000"
 
