@@ -6,8 +6,10 @@ echo "========== OWASP ZAP =========="
 mkdir -p ./reports/zap
 
 docker compose run -T --pull missing --rm zap \
-    zap-baseline.py \
+    zap-full-scan.py \
     -t http://192.168.11.129:3000 \
+    -m 3 \
+    -T 10 \
     -I \
     -z "-silent" \
     -r report.html \
