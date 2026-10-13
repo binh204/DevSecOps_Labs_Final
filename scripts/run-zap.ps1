@@ -5,13 +5,17 @@ echo "========== OWASP ZAP =========="
 
 mkdir -p ./reports/zap
 
-docker compose run -T --pull missing --rm zap \
+docker compose run --pull missing --rm \
+    -e PYTHONUNBUFFERED=1 \
+    zap \
     zap-full-scan.py \
     -t http://192.168.11.129:3000 \
+    -j \
     -m 3 \
     -T 10 \
     -I \
-    -z "-silent" \
+    -d \
+    -z "-config connection.timeoutInSecs=5" \
     -r report.html \
     -J report.json \
     -w report.md \

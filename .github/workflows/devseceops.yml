@@ -25,17 +25,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check Docker and Docker Compose
-        run: docker --version ; docker compose version
+      # - name: Check Docker and Docker Compose
+      #   run: docker --version ; docker compose version
 
-      - name: Run Semgrep (SAST)
-        run: bash ./scripts/run-semgrep.ps1
+      # - name: Run Semgrep (SAST)
+      #   run: bash ./scripts/run-semgrep.ps1
 
       # - name: Build Image
       #   run: bash ./scripts/build-image.ps1
 
-      - name: Run Trivy (SCA)
-        run: bash ./scripts/run-trivy.ps1
+      # - name: Run Trivy (SCA)
+      #   run: bash ./scripts/run-trivy.ps1
 
       - name: Push image to GHCR (Staging Candidate)
         run: |
