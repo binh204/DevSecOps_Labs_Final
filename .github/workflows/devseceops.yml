@@ -25,17 +25,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      # - name: Check Docker and Docker Compose
-      #   run: docker --version ; docker compose version
+      - name: Check Docker and Docker Compose
+        run: docker --version ; docker compose version
 
-      # - name: Run Semgrep (SAST)
-      #   run: bash ./scripts/run-semgrep.ps1
+      - name: Run Semgrep (SAST)
+        run: bash ./scripts/run-semgrep.ps1
 
-      # - name: Build Image
-      #   run: bash ./scripts/build-image.ps1
+      - name: Build Image
+        run: bash ./scripts/build-image.ps1
 
-      # - name: Run Trivy (SCA)
-      #   run: bash ./scripts/run-trivy.ps1
+      - name: Run Trivy (SCA)
+        run: bash ./scripts/run-trivy.ps1
 
       - name: Push image to GHCR (Staging Candidate)
         run: |
@@ -66,11 +66,11 @@ jobs:
           RUN_NUMBER: ${{ github.run_number }}
         run: bash ./scripts/import-defectdojo.ps1
 
-      # - name: Check Security Quality Gate
-      #   env:
-      #     API_TOKEN: ${{ secrets.DEFECTDOJO_API_KEY }}
-      #     RUN_NUMBER: ${{ github.run_number }}
-      #   run: python3 ./scripts/check_quality_gate.py
+      - name: Check Security Quality Gate
+        env:
+          API_TOKEN: ${{ secrets.DEFECTDOJO_API_KEY }}
+          RUN_NUMBER: ${{ github.run_number }}
+        run: python3 ./scripts/check_quality_gate.py
 
       - name: Promote Image to Production Tag
         if: success()
