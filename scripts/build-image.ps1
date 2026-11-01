@@ -2,20 +2,6 @@
 echo ""
 echo "========== BUILD IMAGE =========="
 
-# Kiểm tra nếu đang ở trong Git repo và kiểm tra sự thay đổi trong thư mục juice-shop
-if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-    if ! git diff --name-only HEAD~1 HEAD 2>/dev/null | grep -q "^juice-shop/"; then
-        if docker image inspect juice-shop:latest >/dev/null 2>&1; then
-            echo "No source code changes detected in ./juice-shop since last commit."
-            echo "Skipping docker build. Reusing existing local image 'juice-shop:latest'."
-            if [ -n "$GITHUB_RUN_NUMBER" ]; then
-                docker tag juice-shop:latest "juice-shop:v$GITHUB_RUN_NUMBER" 2>/dev/null || true
-            fi
-            exit 0
-        fi
-    fi
-fi
-
 # Nếu chạy trong GitHub Actions thì dùng số lần chạy
 if [ -n "$GITHUB_RUN_NUMBER" ]; then
     Version="v$GITHUB_RUN_NUMBER"
