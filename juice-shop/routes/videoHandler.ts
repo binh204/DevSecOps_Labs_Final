@@ -70,10 +70,10 @@ export const promotionVideo = () => {
       let compiledTemplate = fn()
 
       // Lỗi Stored XSS (Video XSS)
-      compiledTemplate = compiledTemplate.replace('<script id="subtitle"></script>', '<script id="subtitle" type="text/vtt" data-label="English" data-lang="en">' + subs + '</script>')
+      // compiledTemplate = compiledTemplate.replace('<script id="subtitle"></script>', '<script id="subtitle" type="text/vtt" data-label="English" data-lang="en">' + subs + '</script>')
       
       // Fix Stored XSS (EscapeSubs)
-      // compiledTemplate = compiledTemplate.replace('<script id="subtitle"></script>', '<script id="subtitle" type="text/vtt" data-label="English" data-lang="en">' + entities.encode(subs) + '</script>')
+      compiledTemplate = compiledTemplate.replace('<script id="subtitle"></script>', '<script id="subtitle" type="text/vtt" data-label="English" data-lang="en">' + entities.encode(subs) + '</script>')
       res.send(compiledTemplate)
     })
   }

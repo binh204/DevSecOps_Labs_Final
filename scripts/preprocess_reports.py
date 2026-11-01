@@ -62,7 +62,7 @@ def calculate_cvss3_score(vector_str):
     iss = 1.0 - ((1.0 - c) * (1.0 - i) * (1.0 - a))
     
     if scope == 'C':
-        impact = 7.52 * (iss - 0.029) - 3.25 * ((iss - 0.029) ** 15)
+        impact = 7.52 * (iss - 0.029) - 3.25 * ((iss - 0.02) ** 15)
     else:
         impact = 6.42 * iss
         
