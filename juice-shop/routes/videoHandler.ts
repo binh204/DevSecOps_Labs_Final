@@ -69,11 +69,14 @@ export const promotionVideo = () => {
       const fn = pug.compile(template)
       let compiledTemplate = fn()
 
-      // Lỗi Stored XSS (Video XSS)
+      // [VULNERABILITY] Lỗi Stored XSS gốc (Video XSS):
       // compiledTemplate = compiledTemplate.replace('<script id="subtitle"></script>', '<script id="subtitle" type="text/vtt" data-label="English" data-lang="en">' + subs + '</script>')
       
-      // Fix Stored XSS (EscapeSubs)
-      compiledTemplate = compiledTemplate.replace('<script id="subtitle"></script>', '<script id="subtitle" type="text/vtt" data-label="English" data-lang="en">' + entities.encode(subs) + '</script>')
+      // [DEVSECOPS REMEDIATION] Fix Stored XSS & Khôi phục cú pháp WebVTT:
+      // - Mã hóa HTML Entities để triệt tiêu XSS (Semgrep SAST PASS)
+      // - Hoàn trả ký tự '-->' để trình duyệt parse mốc thời gian phụ đề chính xác
+      const safeSubs = entities.encode(subs).replace(/--&gt;/g, '-->')
+      compiledTemplate = compiledTemplate.replace('<script id="subtitle"></script>', '<script id="subtitle" type="text/vtt" data-label="English" data-lang="en">' + safeSubs + '</script>')
       res.send(compiledTemplate)
     })
   }

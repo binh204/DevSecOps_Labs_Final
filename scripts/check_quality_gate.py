@@ -95,15 +95,15 @@ def main():
     print("---------------------------------\n")
 
     # SECURITY QUALITY GATE POLICY:
-    # Fail pipeline IF Critical > 0
-    if critical_count > 0:
-        print(f"❌ QUALITY GATE FAILED: Found {critical_count} CRITICAL vulnerability(ies)!")
+    # Fail pipeline IF Critical > 0 or High > 0
+    if critical_count > 0 or high_count > 0:
+        print(f"🔴 QUALITY GATE FAILED: Found {critical_count} CRITICAL and {high_count} HIGH vulnerability(ies)!")
         print("Production Deployment BLOCKED by Security Policy.")
         sys.exit(1)
     else:
-        print("✅ QUALITY GATE PASSED: 0 Critical vulnerabilities found.")
-        if high_count > 0 or medium_count > 0:
-            print(f"⚠️ Warning: Found {high_count} High and {medium_count} Medium findings. Allowed for Demo / Non-Critical deployment.")
+        print("🟢 QUALITY GATE PASSED: 0 Critical and 0 High vulnerabilities found.")
+        if medium_count > 0 or low_count > 0:
+            print(f"🟡 Warning: Found {medium_count} Medium and {low_count} Low findings. Allowed for deployment.")
         print("Production Deployment APPROVED.")
         sys.exit(0)
 

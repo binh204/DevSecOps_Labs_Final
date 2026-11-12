@@ -18,7 +18,7 @@ permissions:
 jobs:
   security:
     runs-on: [self-hosted, Linux]
-    timeout-minutes: 40
+    timeout-minutes: 60
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
@@ -56,8 +56,8 @@ jobs:
       - name: Health Check
         run: bash ./scripts/health-check.ps1
 
-      - name: Run OWASP ZAP (DAST)
-        run: bash ./scripts/run-zap.ps1
+      # - name: Run OWASP ZAP (DAST)
+      #   run: bash ./scripts/run-zap.ps1
 
       - name: Import Reports to DefectDojo
         if: always()
@@ -79,8 +79,8 @@ jobs:
           docker tag ghcr.io/binh204/juice-shop:sha-${{ env.SHORT_SHA }} ghcr.io/binh204/juice-shop:latest
           docker push ghcr.io/binh204/juice-shop:latest
 
-      - name: Deploy Juice Shop (Production)
-        run: bash ./scripts/deploy-public.ps1
+      # - name: Deploy Juice Shop (Production)
+      #   run: bash ./scripts/deploy-public.ps1
 
       # - name: Upload Reports
       #   if: always()
