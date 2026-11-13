@@ -22,12 +22,14 @@ export function searchProducts () {
     criteria = (criteria.length <= 200) ? criteria : criteria.substring(0, 200)
     // Lỗ hổng Union-based SQLi
     // models.sequelize.query(`SELECT * FROM Products WHERE ((name LIKE '%${criteria}%' OR description LIKE '%${criteria}%') AND deletedAt IS NULL) ORDER BY name`) // vuln-code-snippet vuln-line unionSqlInjectionChallenge dbSchemaChallenge
+    //Union-based SQLi Fix 
     models.sequelize.query(
       'SELECT * FROM Products WHERE ((name LIKE :search OR description LIKE :search) AND deletedAt IS NULL) ORDER BY name',
       {
         replacements: { search: `%${criteria}%` }
       }
     )
+    //
       .then(([products]: any) => {
         const dataString = JSON.stringify(products)
         if (challengeUtils.notSolved(challenges.unionSqlInjectionChallenge)) { // vuln-code-snippet hide-start
